@@ -30,7 +30,6 @@ public class DataAccessObject<V> {
     return dataAccess.getData(key, dataList);
   }
 
-  @SuppressWarnings("unused")
   public List<V> getDataList() {
     return dataList;
   }

@@ -3,16 +3,11 @@ package com.goryaninaa.winter.cache;
 import com.goryaninaa.winter.logger.mech.Logger;
 import com.goryaninaa.winter.logger.mech.LoggingMech;
 import com.goryaninaa.winter.logger.mech.StackTraceString;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 
 /**
  * Main concurrent cache class. It stands kinda between repository and DAO.
@@ -22,22 +17,18 @@ import java.util.concurrent.FutureTask;
  */
 public class Storage<V> implements Cache<V> {
 
-  private final Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorage
+  /* package */ final Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorage
       = new ConcurrentHashMap<>();
   /* package */ final DataAccessObject<V> dao;
-  private final int underused;
   private static final Logger LOG = LoggingMech.getLogger(Storage.class.getCanonicalName());
 
   /**
    * Constructor.
    *
    * @param dao - DAO of cached entity
-   * @param properties - property Cache.underused, which defines number of uses of cached data,
-   *                   lower of which everything will be cleaned
    */
-  public Storage(final DataAccessObject<V> dao, final Properties properties) {
+  public Storage(final DataAccessObject<V> dao) {
     this.dao = dao;
-    this.underused = Integer.parseInt(properties.getProperty("Cache.underused"));
   }
 
   /**
@@ -77,45 +68,7 @@ public class Storage<V> implements Cache<V> {
       cacheStorage.remove(cacheKey);
     }
   }
-  
-  /* package */ int size() {
-    return cacheStorage.size();
-  }
-  
-  /* package */ void cleanBelow(final int value) {
-    int countBeforeHalf = cacheStorage.size() / 2;
-    for (final Entry<CacheKey, Map<CacheKey, Future<Optional<V>>>> cachedElement : cacheStorage
-        .entrySet()) {
-      if (cachedElement.getKey().getNumberOfUses() < value) {
-        cacheStorage.remove(cachedElement.getKey());
-        countBeforeHalf--;
-      }
-      if (countBeforeHalf == 0) {
-        break;
-      }
-    }
-  }
 
-  /* package */ int defineMedian() {
-    int totalSum = 0;
-    for (final Entry<CacheKey, Map<CacheKey, Future<Optional<V>>>> cachedElement : cacheStorage
-        .entrySet()) {
-      totalSum += cachedElement.getKey().getNumberOfUses();
-    }
-    return totalSum / cacheStorage.size();
-  }
-
-  /* package */ int countUnderused() {
-    int underusedNumber = 0;
-    for (final Entry<CacheKey, Map<CacheKey, Future<Optional<V>>>> cachedElement : cacheStorage
-        .entrySet()) {
-      if (cachedElement.getKey().getNumberOfUses() < underused) {
-        underusedNumber++;
-      }
-    }
-    return underusedNumber;
-  }
-  
   private void cleanCacheIfThereIsNoDataInDao(final CacheKey key,
       final Optional<Future<Optional<V>>> data) throws InterruptedException, ExecutionException {
     //noinspection OptionalGetWithoutIsPresent

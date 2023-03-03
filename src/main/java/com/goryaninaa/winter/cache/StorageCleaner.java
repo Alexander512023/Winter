@@ -4,8 +4,11 @@ import com.goryaninaa.winter.logger.mech.Logger;
 import com.goryaninaa.winter.logger.mech.LoggingMech;
 import com.goryaninaa.winter.logger.mech.StackTraceString;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * This class is responsible for cache clean up logic.
@@ -15,7 +18,7 @@ import java.util.concurrent.Executors;
  */
 public class StorageCleaner<V> {
 
-  private final Storage<V> storage;
+  private final Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorage;
   private final int sizeParam;
   private final int underused;
   private static final Logger LOG = LoggingMech.getLogger(StorageCleaner.class.getCanonicalName());
@@ -27,7 +30,7 @@ public class StorageCleaner<V> {
    * @param properties - properties
    */
   public StorageCleaner(final Storage<V> storage, final Properties properties) {
-    this.storage = storage;
+    this.cacheStorage = storage.cacheStorage;
     this.sizeParam = Integer.parseInt(properties.getProperty("Cache.size"));
     this.underused = Integer.parseInt(properties.getProperty("Cache.underused"));
   }
@@ -44,14 +47,52 @@ public class StorageCleaner<V> {
   }
 
   private void cleanCache() {
-    if (storage.size() > sizeParam) {
-      if (storage.size() - storage.countUnderused() < sizeParam) {
-        storage.cleanBelow(underused);
+    if (size() > sizeParam) {
+      if (size() - countUnderused() < sizeParam) {
+        cleanBelow(underused);
       } else {
-        storage.cleanBelow(storage.defineMedian());
+        cleanBelow(defineMedian());
       }
     }
     sleep();
+  }
+
+  private int size() {
+    return cacheStorage.size();
+  }
+
+  private void cleanBelow(final int value) {
+    int countBeforeHalf = cacheStorage.size() / 2;
+    for (final Map.Entry<CacheKey, Map<CacheKey, Future<Optional<V>>>> cachedElement : cacheStorage
+            .entrySet()) {
+      if (cachedElement.getKey().getNumberOfUses() < value) {
+        cacheStorage.remove(cachedElement.getKey());
+        countBeforeHalf--;
+      }
+      if (countBeforeHalf == 0) {
+        break;
+      }
+    }
+  }
+
+  private int defineMedian() {
+    int totalSum = 0;
+    for (final Map.Entry<CacheKey, Map<CacheKey, Future<Optional<V>>>> cachedElement : cacheStorage
+            .entrySet()) {
+      totalSum += cachedElement.getKey().getNumberOfUses();
+    }
+    return totalSum / cacheStorage.size();
+  }
+
+  private int countUnderused() {
+    int underusedNumber = 0;
+    for (final Map.Entry<CacheKey, Map<CacheKey, Future<Optional<V>>>> cachedElement : cacheStorage
+            .entrySet()) {
+      if (cachedElement.getKey().getNumberOfUses() < underused) {
+        underusedNumber++;
+      }
+    }
+    return underusedNumber;
   }
 
   private void sleep() {
