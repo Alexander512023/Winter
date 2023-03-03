@@ -3,13 +3,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.goryaninaa.web</groupId>
-	<artifactId>HttpServer</artifactId>
+	<groupId>com.goryaninaa</groupId>
+	<artifactId>winter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<name>HttpServer</name>
-	<!-- FIXME change it to the project's website -->
-	<url>http://www.example.com</url>
+	<name>Winter</name>
+	<url>https://github.com/Alexander512023/winter</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -29,6 +28,12 @@
 			<artifactId>LoggingMech</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.1</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -51,10 +56,6 @@
 				<version>3.0.2</version>
 			</plugin>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
-			</plugin>
-			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.0.2</version>
 			</plugin>
@@ -74,6 +75,15 @@
 			<plugin>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 				<version>3.0.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.10.1</version>
+				<configuration>
+					<source>11</source>
+					<target>11</target>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

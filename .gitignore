@@ -31,6 +31,13 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 
 ##############################
+## Intellij
+##############################
+.idea/
+*.iml
+*.iws
+
+##############################
 ## Eclipse
 ##############################
 .settings/
