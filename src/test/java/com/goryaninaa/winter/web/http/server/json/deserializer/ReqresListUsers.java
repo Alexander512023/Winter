@@ -14,7 +14,7 @@ public class ReqresListUsers { // NOPMD
   private int perPage;
   private int total;
   private int totalPages;
-  private List<Person> data;
+  private List<PersonD> data;
   private Support support;
 
   public ReqresListUsers() { // NOPMD
@@ -31,7 +31,7 @@ public class ReqresListUsers { // NOPMD
    * @param support    - support
    */
   public ReqresListUsers(final int page, final int perPage, final int total, final int totalPages,
-      final List<Person> data, final Support support) {
+      final List<PersonD> data, final Support support) {
     super();
     this.page = page;
     this.perPage = perPage;
@@ -73,11 +73,11 @@ public class ReqresListUsers { // NOPMD
     this.totalPages = totalPages;
   }
 
-  public List<Person> getData() {
+  public List<PersonD> getData() {
     return data;
   }
 
-  public void setData(final List<Person> data) {
+  public void setData(final List<PersonD> data) {
     this.data = data;
   }
 

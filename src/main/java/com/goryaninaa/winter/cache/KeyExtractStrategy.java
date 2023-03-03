@@ -10,6 +10,6 @@ public interface KeyExtractStrategy {
   Object extractKey(Object entity);
 
   @SuppressWarnings("unused")
-  String getStrategy();
+  String getStrategyType();
 
 }

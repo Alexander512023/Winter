@@ -9,11 +9,10 @@ import java.util.Optional;
  *
  * @author Alex Goryanin
  */
-public interface DataAccessStrategy {
+public interface DataAccessStrategy<V> {
 
-  <V> Optional<V> getData(Object key, List<V> data);
+  Optional<V> getData(Object key, List<V> data);
 
-  @SuppressWarnings("unused")
-  String getStrategy();
+  String getStrategyType();
 
 }

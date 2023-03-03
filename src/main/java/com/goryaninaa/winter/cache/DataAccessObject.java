@@ -14,19 +14,19 @@ import javax.naming.OperationNotSupportedException;
  */
 public class DataAccessObject<V> {
 
-  private final Map<String, DataAccessStrategy> dataAccesses;
+  private final Map<String, DataAccessStrategy<V>> dataAccesses;
   private final List<V> dataList = new ArrayList<>();
 
-  protected DataAccessObject(final Map<String, DataAccessStrategy> dataAccesses) {
+  protected DataAccessObject(final Map<String, DataAccessStrategy<V>> dataAccesses) {
     this.dataAccesses = dataAccesses;
   }
 
-  /* package */ Optional<V> getData(final Object key, final String accessType)
+  protected Optional<V> getData(final Object key, final String accessType)
       throws OperationNotSupportedException {
     if (!dataAccesses.containsKey(accessType)) {
       throw new OperationNotSupportedException("Not supported");
     }
-    final DataAccessStrategy dataAccess = dataAccesses.get(accessType);
+    final DataAccessStrategy<V> dataAccess = dataAccesses.get(accessType);
     return dataAccess.getData(key, dataList);
   }
 

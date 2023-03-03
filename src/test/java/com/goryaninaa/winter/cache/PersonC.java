@@ -1,4 +1,4 @@
-package com.goryaninaa.winter.web.http.server.json.deserializer;
+package com.goryaninaa.winter.cache;
 
 import java.util.Objects;
 
@@ -8,14 +8,14 @@ import java.util.Objects;
  * @author Alex Goryanin
  */
 @SuppressWarnings("unused")
-public class Person { // NOPMD
+public class PersonC { // NOPMD
   private int id; // NOPMD
   private String email;
   private String firstName;
   private String lastName;
   private String avatar;
 
-  public Person() {
+  public PersonC() {
     super();
   }
 
@@ -28,8 +28,8 @@ public class Person { // NOPMD
    * @param lastName  - lastName
    * @param avatar    - avatar
    */
-  public Person(final int id, final String email, final String firstName, // NOPMD
-      final String lastName, final String avatar) {
+  public PersonC(final int id, final String email, final String firstName, // NOPMD
+                 final String lastName, final String avatar) {
     super();
     this.id = id;
     this.email = email;
@@ -94,9 +94,7 @@ public class Person { // NOPMD
     if (getClass() != obj.getClass()) {
       return false; // NOPMD
     }
-    final Person other = (Person) obj;
-    return Objects.equals(avatar, other.avatar) && Objects.equals(email, other.email)
-        && Objects.equals(firstName, other.firstName) && id == other.id
-        && Objects.equals(lastName, other.lastName);
+    final PersonC other = (PersonC) obj;
+    return id == other.id;
   }
 }

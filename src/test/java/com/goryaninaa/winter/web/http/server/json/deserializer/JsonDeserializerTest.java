@@ -33,13 +33,13 @@ class JsonDeserializerTest {
 
   @Test
   void testDeserializeListAndFieldObject() {
-    final Person person1 = new Person(7, "michael.lawson@reqres.in", "Michael", "Lawson",
+    final PersonD person1 = new PersonD(7, "michael.lawson@reqres.in", "Michael", "Lawson",
         "https://reqres.in/img/faces/7-image.jpg");
-    final Person person2 = new Person(8, "lindsay.ferguson@reqres.in", "Lindsay", "Ferguson",
+    final PersonD person2 = new PersonD(8, "lindsay.ferguson@reqres.in", "Lindsay", "Ferguson",
         "https://reqres.in/img/faces/8-image.jpg");
-    final Person person3 = new Person(9, "tobias.funke@reqres.in", "Tobias", "Funke",
+    final PersonD person3 = new PersonD(9, "tobias.funke@reqres.in", "Tobias", "Funke",
         "https://reqres.in/img/faces/9-image.jpg");
-    final List<Person> dataList = new ArrayList<>();
+    final List<PersonD> dataList = new ArrayList<>();
     dataList.add(person1);
     dataList.add(person2);
     dataList.add(person3);
@@ -52,16 +52,16 @@ class JsonDeserializerTest {
 
   @Test
   void testDeserialize() {
-    final Person actualPersJson = new Person(7, "michael.lawson@reqres.in", "Michael", "Lawson",
+    final PersonD actualPersJson = new PersonD(7, "michael.lawson@reqres.in", "Michael", "Lawson",
         "https://reqres.in/img/faces/7-image.jpg");
-    final Person expectedPersJson = deserializer.deserialize(Person.class, correctPersonJson);
+    final PersonD expectedPersJson = deserializer.deserialize(PersonD.class, correctPersonJson);
     assertEquals(expectedPersJson, actualPersJson);
   }
 
   @Test
   void testDeserializeCheckIncorrect() {
     final Exception incorrectE = assertThrows(ClientException.class, () ->
-      deserializer.deserialize(Person.class, incorrectDataJson));
+      deserializer.deserialize(PersonD.class, incorrectDataJson));
     final String expectedMessage = "Deserializing JSON incorrect format";
     final String actualMessage = incorrectE.getMessage();
     assertEquals(expectedMessage, actualMessage);
@@ -70,7 +70,7 @@ class JsonDeserializerTest {
   @Test
   void testDeserializeCheckEmpty() {
     final Exception incorrectE = assertThrows(ServerException.class, () ->
-            deserializer.deserialize(Person.class, EMPTY_JSOM));
+            deserializer.deserialize(PersonD.class, EMPTY_JSOM));
     final String expectedMessage = "Empty JSON string";
     final String actualMessage = incorrectE.getMessage();
     assertEquals(expectedMessage, actualMessage);
