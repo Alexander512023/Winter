@@ -1,5 +1,6 @@
 package com.goryaninaa.winter.cache;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -11,54 +12,59 @@ import java.util.concurrent.Future;
 import static org.junit.jupiter.api.Assertions.*;
 class StorageCleanerTest {
 
-    @Test
-    void storageCleanerShouldMaintainCacheSize() throws InterruptedException {
-        final Map<CacheKey, Map<CacheKey, Future<Optional<PersonC>>>> cacheStorage =
-                new ConcurrentHashMap<>();
+    private static Map<CacheKey, Map<CacheKey, Future<Optional<PersonC>>>> cacheStorage1;
+    private static Map<CacheKey, Map<CacheKey, Future<Optional<PersonC>>>> cacheStorage2;
+    private static Map<CacheKey, Map<CacheKey, Future<Optional<PersonC>>>> cacheStorage3;
+    private static StorageCleaner<PersonC> storageCleaner1;
+    private static StorageCleaner<PersonC> storageCleaner2;
+    private static StorageCleaner<PersonC> storageCleaner3;
+
+
+
+    @BeforeAll
+    static void init() {
         Properties properties = new Properties();
         properties.put("Cache.size", "3");
-        StorageCleaner<PersonC> storageCleaner = new StorageCleaner<>(cacheStorage, properties);
+        cacheStorage1 = new ConcurrentHashMap<>();
+        storageCleaner1 = new StorageCleaner<>(cacheStorage1, properties);
+        cacheStorage2 = new ConcurrentHashMap<>();
+        storageCleaner2 = new StorageCleaner<>(cacheStorage2, properties);
+        cacheStorage3 = new ConcurrentHashMap<>();
+        storageCleaner3 = new StorageCleaner<>(cacheStorage3, properties);
+    }
+    @Test
+    void storageCleanerShouldMaintainCacheSize() throws InterruptedException {
         StorageCleanerScenarioPreparator preparator =
-                new StorageCleanerScenarioPreparator("11123", cacheStorage);
+                new StorageCleanerScenarioPreparator("11123", cacheStorage1);
         preparator.doWork();
-        storageCleaner.run();
+        storageCleaner1.run();
         Thread.sleep(25);
-        storageCleaner.shutdown();
-        assertEquals(3, cacheStorage.size());
+        storageCleaner1.shutdown();
+        assertEquals(3, cacheStorage1.size());
     }
 
     @Test
     void storageCleanerShouldKeepHighlyDesiredData() throws InterruptedException {
-        final Map<CacheKey, Map<CacheKey, Future<Optional<PersonC>>>> cacheStorage =
-                new ConcurrentHashMap<>();
-        Properties properties = new Properties();
-        properties.put("Cache.size", "3");
-        StorageCleaner<PersonC> storageCleaner = new StorageCleaner<>(cacheStorage, properties);
         StorageCleanerScenarioPreparator preparator =
-                new StorageCleanerScenarioPreparator("11123", cacheStorage);
+                new StorageCleanerScenarioPreparator("11123", cacheStorage2);
         preparator.doWork();
-        storageCleaner.run();
+        storageCleaner2.run();
         Thread.sleep(25);
-        storageCleaner.shutdown();
-        assertTrue(isConfirmed(cacheStorage));
+        storageCleaner2.shutdown();
+        assertTrue(isConfirmed(cacheStorage2));
     }
 
     @Test
     void storageCleanerShouldNotWorkAfterShutdown() throws InterruptedException {
-        final Map<CacheKey, Map<CacheKey, Future<Optional<PersonC>>>> cacheStorage =
-                new ConcurrentHashMap<>();
-        Properties properties = new Properties();
-        properties.put("Cache.size", "3");
-        StorageCleaner<PersonC> storageCleaner = new StorageCleaner<>(cacheStorage, properties);
         StorageCleanerScenarioPreparator preparator =
-                new StorageCleanerScenarioPreparator("11123", cacheStorage);
+                new StorageCleanerScenarioPreparator("11123", cacheStorage3);
         preparator.doWork();
-        storageCleaner.run();
+        storageCleaner3.run();
         Thread.sleep(25);
-        storageCleaner.shutdown();
+        storageCleaner3.shutdown();
         Thread.sleep(50);
         preparator.doWork();
-        assertEquals(5, cacheStorage.size());
+        assertEquals(5, cacheStorage3.size());
     }
 
     private boolean isConfirmed(Map<CacheKey, Map<CacheKey, Future<Optional<PersonC>>>> cacheStorage) {
