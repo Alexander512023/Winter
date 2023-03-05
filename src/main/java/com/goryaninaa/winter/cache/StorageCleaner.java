@@ -22,7 +22,6 @@ public class StorageCleaner<V> {
 
   private final Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorage;
   private final int sizeParam;
-  private final int underused;
   private final ExecutorService executorService;
   private final AtomicBoolean running;
   private static final Logger LOG = LoggingMech.getLogger(StorageCleaner.class.getCanonicalName());
@@ -37,7 +36,6 @@ public class StorageCleaner<V> {
           final Properties properties) {
     this.cacheStorage = cacheStorage;
     this.sizeParam = Integer.parseInt(properties.getProperty("Cache.size"));
-    this.underused = Integer.parseInt(properties.getProperty("Cache.underused"));
     this.executorService = Executors.newSingleThreadExecutor();
     this.running = new AtomicBoolean(false);
   }
@@ -66,11 +64,7 @@ public class StorageCleaner<V> {
 
   private void cleanCache() {
     if (size() > sizeParam) {
-      if (size() - countUnderused() < sizeParam) {
-        cleanBelowUses(underused);
-      } else {
         cleanBelowUses(defineMedianUsage());
-      }
     }
     sleep();
   }
@@ -83,7 +77,7 @@ public class StorageCleaner<V> {
     int countBeforeLimit = cacheStorage.size() - sizeParam;
     for (final Map.Entry<CacheKey, Map<CacheKey, Future<Optional<V>>>> cachedElement : cacheStorage
             .entrySet()) {
-      if (cachedElement.getKey().getNumberOfUses() < value) {
+      if (cachedElement.getKey().getNumberOfUses() <= value) {
         cacheStorage.remove(cachedElement.getKey());
         countBeforeLimit--;
       }
@@ -100,17 +94,6 @@ public class StorageCleaner<V> {
       totalSum += cachedElement.getKey().getNumberOfUses();
     }
     return totalSum / cacheStorage.size();
-  }
-
-  private int countUnderused() {
-    int underusedNumber = 0;
-    for (final Map.Entry<CacheKey, Map<CacheKey, Future<Optional<V>>>> cachedElement : cacheStorage
-            .entrySet()) {
-      if (cachedElement.getKey().getNumberOfUses() < underused) {
-        underusedNumber++;
-      }
-    }
-    return underusedNumber;
   }
 
   private void sleep() {

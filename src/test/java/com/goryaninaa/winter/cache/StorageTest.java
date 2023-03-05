@@ -30,10 +30,8 @@ class StorageTest {
 
     @Test
     void getDataShouldReturnFromDaoIfNotInCache() {
-        PersonC person1 = new PersonC();
-        person1.setId(1);
-        PersonC person2 = new PersonC();
-        person1.setId(2);
+        PersonC person1 = new PersonC(1);
+        PersonC person2 = new PersonC(2);
         CacheKey person1Key =
                 cacheKeyFactory.generateCacheKey(person1.getId(), PersonAccessStrategyType.ID);
         personDaoStub1.save(person1);
@@ -44,10 +42,8 @@ class StorageTest {
 
     @Test
     void getDataShouldReturnFromCacheIfPresent() {
-        PersonC person1 = new PersonC();
-        person1.setId(1);
-        PersonC person2 = new PersonC();
-        person1.setId(2);
+        PersonC person1 = new PersonC(1);
+        PersonC person2 = new PersonC(2);
         CacheKey person1Key =
                 cacheKeyFactory.generateCacheKey(person1.getId(), PersonAccessStrategyType.ID);
         personDaoStub2.save(person1);
@@ -60,10 +56,8 @@ class StorageTest {
 
     @Test
     void getDataShouldHandleConcurrentSituation() throws ExecutionException, InterruptedException {
-        PersonC person1 = new PersonC();
-        person1.setId(1);
-        PersonC person2 = new PersonC();
-        person1.setId(2);
+        PersonC person1 = new PersonC(1);
+        PersonC person2 = new PersonC(2);
         CacheKey person1Key =
                 cacheKeyFactory.generateCacheKey(person1.getId(), PersonAccessStrategyType.ID);
         personDaoStub3.save(person1);
@@ -83,10 +77,8 @@ class StorageTest {
 
     @Test
     void removeShouldRemoveDataFromCache() {
-        PersonC person1 = new PersonC();
-        person1.setId(1);
-        PersonC person2 = new PersonC();
-        person1.setId(2);
+        PersonC person1 = new PersonC(1);
+        PersonC person2 = new PersonC(2);
         CacheKey person1Key =
                 cacheKeyFactory.generateCacheKey(person1.getId(), PersonAccessStrategyType.ID);
         personDaoStub4.save(person1);
@@ -106,11 +98,11 @@ class StorageTest {
         return executorService.submit(() -> personCache3.getData(key).get());
     }
     private static void createTestEnv() {
-        PersonStorageTestEnvGenerator generator1 = new PersonStorageTestEnvGenerator();
-        PersonStorageTestEnvGenerator generator2 = new PersonStorageTestEnvGenerator();
-        PersonStorageTestEnvGenerator generator3 = new PersonStorageTestEnvGenerator();
-        PersonStorageTestEnvGenerator generator4 = new PersonStorageTestEnvGenerator();
-        cacheKeyFactory = PersonStorageTestEnvGenerator.personIdCacheKeyFactory;
+        StorageTestEnvGenerator generator1 = new StorageTestEnvGenerator();
+        StorageTestEnvGenerator generator2 = new StorageTestEnvGenerator();
+        StorageTestEnvGenerator generator3 = new StorageTestEnvGenerator();
+        StorageTestEnvGenerator generator4 = new StorageTestEnvGenerator();
+        cacheKeyFactory = StorageTestEnvGenerator.personIdCacheKeyFactory;
         personDaoStub1 = generator1.getPersonDaoStub();
         personCache1 = generator1.getPersonCache();
         personDaoStub2 = generator2.getPersonDaoStub();

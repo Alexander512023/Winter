@@ -5,13 +5,13 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
-public class PersonStorageTestEnvGenerator {
+public class StorageTestEnvGenerator {
 
     protected static final CacheKeyFactory personIdCacheKeyFactory = generatePersonIdCacheKeyFactory();
     private final PersonDaoStub personDaoStub;
     private final Cache<PersonC> personCache;
 
-    protected PersonStorageTestEnvGenerator() {
+    protected StorageTestEnvGenerator() {
         Map<CacheKey, Map<CacheKey, Future<Optional<PersonC>>>> cacheStorageMap =
                 new ConcurrentHashMap<>();
         this.personDaoStub = generatePersonDaoStub();

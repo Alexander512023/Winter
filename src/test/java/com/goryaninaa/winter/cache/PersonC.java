@@ -38,6 +38,11 @@ public class PersonC { // NOPMD
     this.avatar = avatar;
   }
 
+  public PersonC(final int id) {
+    super();
+    this.id = id;
+  }
+
   public int getId() {
     return id;
   }
