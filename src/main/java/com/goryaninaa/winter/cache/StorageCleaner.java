@@ -30,11 +30,12 @@ public class StorageCleaner<V> {
   /**
    * Constructor.
    *
-   * @param storage - storage
+   * @param cacheStorage - cacheStorage
    * @param properties - properties
    */
-  public StorageCleaner(final Storage<V> storage, final Properties properties) {
-    this.cacheStorage = storage.cacheStorage;
+  public StorageCleaner(final Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorage,
+          final Properties properties) {
+    this.cacheStorage = cacheStorage;
     this.sizeParam = Integer.parseInt(properties.getProperty("Cache.size"));
     this.underused = Integer.parseInt(properties.getProperty("Cache.underused"));
     this.executorService = Executors.newSingleThreadExecutor();
@@ -50,17 +51,15 @@ public class StorageCleaner<V> {
   }
 
   public void shutdown() {
-    if (running.get()) {
-      executorService.shutdownNow();
-      if (LOG.isInfoEnabled()) {
-        LOG.info("Cache cleaning is shutdown.");
-      }
+    running.set(false);
+    executorService.shutdownNow();
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Cache cleaning is shutdown.");
     }
   }
 
   private void cleanUp() {
-    //noinspection InfiniteLoopStatement
-    while (true) {
+    while (running.get()) {
       cleanCache();
     }
   }
@@ -68,9 +67,9 @@ public class StorageCleaner<V> {
   private void cleanCache() {
     if (size() > sizeParam) {
       if (size() - countUnderused() < sizeParam) {
-        cleanBelow(underused);
+        cleanBelowUses(underused);
       } else {
-        cleanBelow(defineMedian());
+        cleanBelowUses(defineMedianUsage());
       }
     }
     sleep();
@@ -80,21 +79,21 @@ public class StorageCleaner<V> {
     return cacheStorage.size();
   }
 
-  private void cleanBelow(final int value) {
-    int countBeforeHalf = cacheStorage.size() / 2;
+  private void cleanBelowUses(final int value) {
+    int countBeforeLimit = cacheStorage.size() - sizeParam;
     for (final Map.Entry<CacheKey, Map<CacheKey, Future<Optional<V>>>> cachedElement : cacheStorage
             .entrySet()) {
       if (cachedElement.getKey().getNumberOfUses() < value) {
         cacheStorage.remove(cachedElement.getKey());
-        countBeforeHalf--;
+        countBeforeLimit--;
       }
-      if (countBeforeHalf == 0) {
+      if (countBeforeLimit == 0) {
         break;
       }
     }
   }
 
-  private int defineMedian() {
+  private int defineMedianUsage() {
     int totalSum = 0;
     for (final Map.Entry<CacheKey, Map<CacheKey, Future<Optional<V>>>> cachedElement : cacheStorage
             .entrySet()) {
@@ -121,7 +120,7 @@ public class StorageCleaner<V> {
       if (LOG.isErrorEnabled()) {
         LOG.error(StackTraceString.get(e));
       }
-      throw new CacheException("Cache clean up failed", e);
+      throw new CacheException("Cache clean up failed due to thread interruption", e);
     }
   }
 }

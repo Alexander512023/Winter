@@ -1,8 +1,11 @@
 package com.goryaninaa.winter.cache;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 /**
  * This class is responsible for wrapping {@link Storage}, and taking on itself
@@ -23,8 +26,10 @@ public class CacheStorage<V> implements Cache<V> {
    * @param properties - app properties
    */
   public CacheStorage(final DataAccessObject<V> dao, final Properties properties) {
-    this.storage = new Storage<>(dao);
-    final StorageCleaner<V> storageCleaner = new StorageCleaner<>(storage, properties);
+    Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorageMap =
+            new ConcurrentHashMap<>();
+    this.storage = new Storage<>(dao, cacheStorageMap);
+    final StorageCleaner<V> storageCleaner = new StorageCleaner<>(cacheStorageMap, properties);
     storageCleaner.run();
   }
 

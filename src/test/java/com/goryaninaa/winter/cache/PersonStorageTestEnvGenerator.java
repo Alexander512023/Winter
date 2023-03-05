@@ -1,7 +1,9 @@
 package com.goryaninaa.winter.cache;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 public class PersonStorageTestEnvGenerator {
 
@@ -10,8 +12,10 @@ public class PersonStorageTestEnvGenerator {
     private final Cache<PersonC> personCache;
 
     protected PersonStorageTestEnvGenerator() {
+        Map<CacheKey, Map<CacheKey, Future<Optional<PersonC>>>> cacheStorageMap =
+                new ConcurrentHashMap<>();
         this.personDaoStub = generatePersonDaoStub();
-        this.personCache = generatePersonCache(this.personDaoStub);
+        this.personCache = generatePersonCache(this.personDaoStub, cacheStorageMap);
     }
 
     protected PersonDaoStub getPersonDaoStub() {
@@ -22,8 +26,10 @@ public class PersonStorageTestEnvGenerator {
         return personCache;
     }
 
-    private Cache<PersonC> generatePersonCache(PersonDaoStub personDaoStub) {
-        return new Storage<>(personDaoStub);
+    private Cache<PersonC> generatePersonCache(
+            PersonDaoStub personDaoStub,
+            Map<CacheKey, Map<CacheKey, Future<Optional<PersonC>>>> cacheStorageMap) {
+        return new Storage<>(personDaoStub, cacheStorageMap);
     }
 
     private PersonDaoStub generatePersonDaoStub() {
