@@ -5,6 +5,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class is responsible for controlling logging instances and it's
@@ -16,13 +17,14 @@ import java.util.concurrent.Executors;
 public final class LoggingMech {
 
   private static volatile LoggingMech instance; // NOPMD
+  private final AtomicBoolean logging;
   private final Queue<String> loggingTaskQueue = new ConcurrentLinkedQueue<>();
   private volatile FileSystemAccess fsa; // NOPMD
   private volatile ExecutorService exec; // NOPMD
   private volatile Level level; // NOPMD
 
   private LoggingMech() {
-
+    logging = new AtomicBoolean(false);
   }
 
   /**
@@ -62,6 +64,7 @@ public final class LoggingMech {
    */
   public void startLogging() {
     synchronized (this) {
+      logging.set(true);
       if (fsa != null && level != null) {
         exec = Executors.newSingleThreadExecutor();
         exec.submit(this::runLog);
@@ -78,6 +81,7 @@ public final class LoggingMech {
    */
   public void stopLogging() {
     synchronized (this) {
+      logging.set(false);
       if (exec != null) {
         exec.shutdown();
       }
@@ -127,8 +131,7 @@ public final class LoggingMech {
   }
 
   private void runLog() {
-    //noinspection InfiniteLoopStatement
-    while (true) {
+    while (logging.get()) {
       if (!loggingTaskQueue.isEmpty()) {
         logRecord();
       }

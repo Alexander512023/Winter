@@ -13,6 +13,7 @@ public interface DataAccessStrategy<V> {
 
   Optional<V> getData(Object key, List<V> data);
 
+  @SuppressWarnings("SameReturnValue")
   String getStrategyType();
 
 }

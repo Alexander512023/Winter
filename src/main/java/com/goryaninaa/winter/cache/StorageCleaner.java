@@ -98,7 +98,7 @@ public class StorageCleaner<V> {
 
   private void sleep() {
     try {
-      Thread.sleep(1000);
+      Thread.sleep(5);
     } catch (InterruptedException e) {
       if (LOG.isErrorEnabled()) {
         LOG.error(StackTraceString.get(e));

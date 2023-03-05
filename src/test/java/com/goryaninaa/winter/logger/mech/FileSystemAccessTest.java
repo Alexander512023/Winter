@@ -54,13 +54,15 @@ public class FileSystemAccessTest {
   }
 
   @Test
-  public void fsaShouldCreateNewLogFileIfCurrentHasLengthMoreThan100() {
+  public void fsaShouldCreateNewLogFileIfCurrentHasLengthMoreThan100()
+          throws InterruptedException {
     properties.setProperty(AMOUNT, "10");
     final FileSystemAccess fsa = new FileSystemAccess(properties);
     final boolean beforeZero = new File(PATH).list().length == 0;
     for (int i = 0; i < 27; i++) {
       fsa.writeLog(HELLO + i);
     }
+    Thread.sleep(50);
     final boolean afterTwo = new File(PATH).list().length == 2;
     assertTrue(beforeZero && afterTwo);
   }

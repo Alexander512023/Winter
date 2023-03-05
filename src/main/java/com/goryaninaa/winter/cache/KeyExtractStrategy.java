@@ -5,11 +5,11 @@ package com.goryaninaa.winter.cache;
  *
  * @author Alex Goryanin
  */
+@SuppressWarnings("SameReturnValue")
 public interface KeyExtractStrategy {
 
   Object extractKey(Object entity);
 
-  @SuppressWarnings("unused")
   String getStrategyType();
 
 }
