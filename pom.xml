@@ -24,12 +24,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.goryaninaa.logger</groupId>
-			<artifactId>LoggingMech</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.13.1</version>

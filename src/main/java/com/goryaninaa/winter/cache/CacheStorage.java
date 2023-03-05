@@ -23,7 +23,7 @@ public class CacheStorage<V> implements Cache<V> {
    * @param properties - app properties
    */
   public CacheStorage(final DataAccessObject<V> dao, final Properties properties) {
-    this.storage = new Storage<>(dao, properties);
+    this.storage = new Storage<>(dao);
     final StorageCleaner<V> storageCleaner = new StorageCleaner<>(storage, properties);
     storageCleaner.run();
   }
