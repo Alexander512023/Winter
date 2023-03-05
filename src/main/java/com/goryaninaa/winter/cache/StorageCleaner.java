@@ -7,8 +7,10 @@ import com.goryaninaa.winter.logger.mech.StackTraceString;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class is responsible for cache clean up logic.
@@ -21,6 +23,8 @@ public class StorageCleaner<V> {
   private final Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorage;
   private final int sizeParam;
   private final int underused;
+  private final ExecutorService executorService;
+  private final AtomicBoolean running;
   private static final Logger LOG = LoggingMech.getLogger(StorageCleaner.class.getCanonicalName());
 
   /**
@@ -33,10 +37,25 @@ public class StorageCleaner<V> {
     this.cacheStorage = storage.cacheStorage;
     this.sizeParam = Integer.parseInt(properties.getProperty("Cache.size"));
     this.underused = Integer.parseInt(properties.getProperty("Cache.underused"));
+    this.executorService = Executors.newSingleThreadExecutor();
+    this.running = new AtomicBoolean(false);
   }
 
   public void run() {
-    Executors.newSingleThreadExecutor().submit(this::cleanUp);
+    executorService.submit(this::cleanUp);
+    running.set(true);
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Cache cleaning is running.");
+    }
+  }
+
+  public void shutdown() {
+    if (running.get()) {
+      executorService.shutdownNow();
+      if (LOG.isInfoEnabled()) {
+        LOG.info("Cache cleaning is shutdown.");
+      }
+    }
   }
 
   private void cleanUp() {
