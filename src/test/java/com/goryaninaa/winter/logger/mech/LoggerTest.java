@@ -1,5 +1,6 @@
 package com.goryaninaa.winter.logger.mech;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,8 +42,8 @@ public class LoggerTest {
   @Test
   public void loggerShouldWriteCorrectLogMessageToFs() throws InterruptedException, IOException {
     writeLogMessageToLogFileOnFs();
+    Thread.sleep(25);
     final String message = readWrittenMessageFromLogFileOnFs();
-    deleteLogFile();
     final Matcher matcher = createMatcherToAssert(message);
     assertTrue(matcher.find());
   }
@@ -55,9 +56,14 @@ public class LoggerTest {
     return pattern.matcher(message);
   }
 
-  private void deleteLogFile() {
-    //noinspection ResultOfMethodCallIgnored
-    new File(PATH + "/" + new File(PATH).list()[0]).delete();
+  @After
+  @Before
+  public void deleteLogFile() {
+    final String[] logFilesNames = new File(PATH).list();
+    for (final String logFileName : logFilesNames) {
+      //noinspection ResultOfMethodCallIgnored
+      new File(PATH + "/" + logFileName).delete(); // NOPMD
+    }
   }
 
   private String readWrittenMessageFromLogFileOnFs() throws IOException {

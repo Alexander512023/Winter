@@ -18,52 +18,53 @@ class StorageCleanerTest {
     private static StorageCleaner<PersonC> storageCleaner1;
     private static StorageCleaner<PersonC> storageCleaner2;
     private static StorageCleaner<PersonC> storageCleaner3;
-
-
+    private static StorageCleanerScenarioPreparator preparator1;
+    private static StorageCleanerScenarioPreparator preparator2;
+    private static StorageCleanerScenarioPreparator preparator3;
 
     @BeforeAll
     static void init() {
         Properties properties = new Properties();
         properties.put("Cache.size", "3");
+        final String SCENARIO = "11123";
         cacheStorage1 = new ConcurrentHashMap<>();
         storageCleaner1 = new StorageCleaner<>(cacheStorage1, properties);
+        preparator1 = new StorageCleanerScenarioPreparator(SCENARIO, cacheStorage1);
         cacheStorage2 = new ConcurrentHashMap<>();
         storageCleaner2 = new StorageCleaner<>(cacheStorage2, properties);
+        preparator2 = new StorageCleanerScenarioPreparator(SCENARIO, cacheStorage2);
         cacheStorage3 = new ConcurrentHashMap<>();
         storageCleaner3 = new StorageCleaner<>(cacheStorage3, properties);
+        preparator3 = new StorageCleanerScenarioPreparator(SCENARIO, cacheStorage3);
     }
+
     @Test
     void storageCleanerShouldMaintainCacheSize() throws InterruptedException {
-        StorageCleanerScenarioPreparator preparator =
-                new StorageCleanerScenarioPreparator("11123", cacheStorage1);
-        preparator.doWork();
+        preparator1.doWork();
         storageCleaner1.run();
-        Thread.sleep(25);
+        Thread.sleep(50);
         storageCleaner1.shutdown();
         assertEquals(3, cacheStorage1.size());
     }
 
     @Test
     void storageCleanerShouldKeepHighlyDesiredData() throws InterruptedException {
-        StorageCleanerScenarioPreparator preparator =
-                new StorageCleanerScenarioPreparator("11123", cacheStorage2);
-        preparator.doWork();
+        preparator2.doWork();
         storageCleaner2.run();
-        Thread.sleep(25);
+        Thread.sleep(50);
         storageCleaner2.shutdown();
         assertTrue(isConfirmed(cacheStorage2));
     }
 
     @Test
     void storageCleanerShouldNotWorkAfterShutdown() throws InterruptedException {
-        StorageCleanerScenarioPreparator preparator =
-                new StorageCleanerScenarioPreparator("11123", cacheStorage3);
-        preparator.doWork();
+        preparator3.doWork();
         storageCleaner3.run();
-        Thread.sleep(25);
+        Thread.sleep(50);
         storageCleaner3.shutdown();
         Thread.sleep(50);
-        preparator.doWork();
+        preparator3.doWork();
+        Thread.sleep(50);
         assertEquals(5, cacheStorage3.size());
     }
 

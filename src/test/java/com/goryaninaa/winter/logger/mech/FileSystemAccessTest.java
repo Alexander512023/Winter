@@ -1,7 +1,8 @@
 package com.goryaninaa.winter.logger.mech;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,9 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * JUnit test case for {@link FileSystemAccess}.
@@ -81,6 +82,7 @@ public class FileSystemAccessTest {
    *
    */
   @After
+  @Before
   public void deleteTestLogFiles() {
     final String[] logFilesNames = new File(PATH).list();
     for (final String logFileName : logFilesNames) {
