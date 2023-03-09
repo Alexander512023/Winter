@@ -3,7 +3,6 @@ package com.goryaninaa.winter.web.http.server.entity;
 import com.goryaninaa.winter.web.http.server.HttpResponseCode;
 import com.goryaninaa.winter.web.http.server.Response;
 import com.goryaninaa.winter.web.http.server.json.JsonSerializer;
-
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -45,7 +44,7 @@ public class HttpResponse implements Response {
    */
   public HttpResponse(final HttpResponseCode httpResponseCode, final String body) {
     this.httpResponseCode = httpResponseCode;
-    defineHeaders(body);
+    defineHeaders("text/html; charset=utf-8", body);
     this.response = combine(httpResponseCode, body);
   }
 
@@ -61,7 +60,7 @@ public class HttpResponse implements Response {
     this.httpResponseCode = httpResponseCode;
     JsonSerializer serializer = new JsonSerializer();
     final String body = serializer.serialize(responseObject);
-    defineHeaders(responseObject, body);
+    defineHeaders("application/json", body);
     this.response = combine(httpResponseCode, body);
   }
 
@@ -76,27 +75,19 @@ public class HttpResponse implements Response {
   }
 
   private String combine(final HttpResponseCode httpResponseCode, final String body) {
-    //noinspection StringBufferMayBeStringBuilder
-    final StringBuffer response = new StringBuffer(httpResponseCode.getStartLine());
+    final StringBuilder responseString = new StringBuilder(httpResponseCode.getStartLine());
     for (final Entry<String, String> header : headers.entrySet()) {
-      response.append(header.getKey()).append(": ").append(header.getValue()).append('\n');
+      responseString.append(header.getKey()).append(": ").append(header.getValue()).append('\n');
     }
-    response.append('\n').append(body);
-    return response.toString();
+    responseString.append('\n').append(body);
+    return responseString.toString();
   }
 
-  private void defineHeaders(final String body) {
+  private void defineHeaders(final String value, final String body) {
     defineHeaders();
-    headers.put("Content-Type", "text/html; charset=utf-8");
+    headers.put("Content-Type", value);
     headers.put("Content-Length", String.valueOf(body.getBytes(StandardCharsets.UTF_8).length));
   }
-
-  private <T> void defineHeaders(@SuppressWarnings("unused") final T responseObject, final String body) { // NOPMD
-    defineHeaders();
-    headers.put("Content-Type", "application/json");
-    headers.put("Content-Length", String.valueOf(body.getBytes(StandardCharsets.UTF_8).length));
-  }
-
   private void defineHeaders() {
     headers = new LinkedHashMap<>(15, 0.75f, false);
     headers.put("Server", "RagingServer");

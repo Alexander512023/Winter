@@ -117,6 +117,8 @@ public class HttpRequest implements Request {
         case "DELETE":
           this.method = HttpMethod.DELETE;
           break;
+        default:
+          throw new IllegalStateException("Unexpected value: " + methodString);
       }
     } else {
       throw new IllegalArgumentException("Unsupported http request method");

@@ -22,26 +22,20 @@ class ClientStub {
 
   public void go(final String request) { // NOPMD
     this.request = request;
-
     try (Socket clientSocket = new Socket("127.0.0.1", port); // NOPMD
         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
         BufferedReader in = new BufferedReader(// NOPMD
             new InputStreamReader(clientSocket.getInputStream()))) {
-
       out.println(request);
       out.flush();
-
       //noinspection StatementWithEmptyBody
       while (!in.ready()) { // NOPMD
       }
-
       while (in.ready()) {
         //noinspection StringConcatenationInLoop
         response += in.readLine() + "\n"; // NOPMD
       }
-
       response = response.trim();
-
     } catch (IOException e) {
       e.printStackTrace(); // NOPMD
     }

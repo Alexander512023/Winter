@@ -21,8 +21,7 @@ import java.util.Map.Entry;
  *
  * @author Alex Goryanin
  */
-@SuppressWarnings("StringBufferMayBeStringBuilder")
-public class JsonSerializer { // NOPMD
+public class JsonSerializer {
 
   private static final Logger LOG = LoggingMech.getLogger(JsonSerializer.class.getCanonicalName());
   private static final String VAL_FOR_NULL = "null";
@@ -37,7 +36,7 @@ public class JsonSerializer { // NOPMD
   }
 
   private <T> String getStringRepresentation(final T object) {
-    final StringBuffer result = new StringBuffer();
+    final StringBuilder result = new StringBuilder();
     if (object.getClass().isEnum()) {
       result.append('\"').append(object).append('\"');
     } else {
@@ -118,7 +117,7 @@ public class JsonSerializer { // NOPMD
   private <T> String valueOfList(final T object, final Method getter)
       throws IllegalAccessException, IllegalArgumentException, InvocationTargetException { // NOPMD
     String result;
-    final List<?> fieldList = (List<?>) getter.invoke(object, new Object[0]);
+    final List<?> fieldList = (List<?>) getter.invoke(object);
     if (fieldList != null) {
       result = wrap(fieldList);
     } else {
@@ -145,7 +144,7 @@ public class JsonSerializer { // NOPMD
   }
 
   private String defineMethodName(final String name, final Type type) {
-    final StringBuffer result = new StringBuffer();
+    final StringBuilder result = new StringBuilder();
     if (type.equals(Boolean.class)) {
       result.append("is").append(name.substring(0, 1).toUpperCase(Locale.ROOT))
           .append(name.substring(1));
@@ -157,17 +156,17 @@ public class JsonSerializer { // NOPMD
   }
 
   private String wrap(final Map<String, String> fieldValueMap) {
-    StringBuffer result = new StringBuffer("{");
+    StringBuilder result = new StringBuilder("{");
     for (final Entry<String, String> fieldValue : fieldValueMap.entrySet()) {
       result.append('\"').append(fieldValue.getKey()).append("\": ").append(fieldValue.getValue())
           .append(',');
     }
-    result = new StringBuffer(result.toString().substring(0, result.length() - 1)).append('}');
+    result = new StringBuilder(result.substring(0, result.length() - 1)).append('}');
     return result.toString();
   }
 
   private <T> String wrap(final List<T> fieldList) {
-    StringBuffer result = new StringBuffer("[");
+    StringBuilder result = new StringBuilder("[");
     for (final T value : fieldList) {
       final Type valueType = value.getClass();
       if (valueType.equals(int.class) || valueType.equals(double.class)
@@ -179,7 +178,7 @@ public class JsonSerializer { // NOPMD
         result.append(getStringRepresentation(value)).append(',');
       }
     }
-    result = new StringBuffer(result.toString().substring(0, result.length() - 1)).append(']');
+    result = new StringBuilder(result.substring(0, result.length() - 1)).append(']');
     return result.toString();
   }
 }

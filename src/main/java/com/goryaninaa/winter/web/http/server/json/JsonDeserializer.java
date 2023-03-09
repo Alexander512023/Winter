@@ -156,7 +156,6 @@ public class JsonDeserializer implements Deserializer { // NOPMD
   private Method defineMethod(final Method[] methods, final String methodName) {
     for (final Method method : methods) {
       if (method.getName().equals(methodName)) {
-        method.setAccessible(true); // NOPMD
         return method;
       }
     }
@@ -182,8 +181,7 @@ public class JsonDeserializer implements Deserializer { // NOPMD
   private String convertFieldToMethodName(final String fieldName) {
     final Pattern pattern = Pattern.compile("_");
     final Matcher matcher = pattern.matcher(fieldName);
-    //noinspection StringBufferMayBeStringBuilder
-    final StringBuffer setMethodName = new StringBuffer("set");
+    final StringBuilder setMethodName = new StringBuilder("set");
     String estimated = fieldName;
     while (matcher.find()) {
       setMethodName.append(estimated.substring(0, 1).toUpperCase(Locale.ROOT))
@@ -202,8 +200,7 @@ public class JsonDeserializer implements Deserializer { // NOPMD
   }
 
   private String returnCommas(final String jsonLine) {
-    //noinspection StringBufferMayBeStringBuilder
-    final StringBuffer res = new StringBuffer();
+    final StringBuilder res = new StringBuilder();
     int pos = 0;
     final Pattern pattern = Pattern.compile("\\[comma]");
     final Matcher matcher = pattern.matcher(jsonLine);
@@ -220,8 +217,7 @@ public class JsonDeserializer implements Deserializer { // NOPMD
   }
 
   private String replaceExcessCommas(final String jsonString) {
-    //noinspection StringBufferMayBeStringBuilder
-    final StringBuffer res = new StringBuffer();
+    final StringBuilder res = new StringBuilder();
     int pos = 0;
     final Pattern pattern = Pattern.compile("((?s)\\{.*?})|(\".*?\")|((?s)\\[.*?])");
     final Matcher matcher = pattern.matcher(jsonString);
@@ -237,8 +233,7 @@ public class JsonDeserializer implements Deserializer { // NOPMD
   }
 
   private String replace(final String jsonSubstring) {
-    //noinspection StringBufferMayBeStringBuilder
-    final StringBuffer res = new StringBuffer();
+    final StringBuilder res = new StringBuilder();
     int pos = 0;
     final Pattern pattern = Pattern.compile(",");
     final Matcher matcher = pattern.matcher(jsonSubstring);

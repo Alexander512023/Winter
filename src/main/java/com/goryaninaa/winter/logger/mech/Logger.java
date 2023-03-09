@@ -24,8 +24,8 @@ public class Logger {
    * @param message - message which you want to include to log record
    */
   public void error(final String message) {
-    final String record = generateErrorLogRecord(message);
-    loggingMech.submit(record);
+    final String logRecord = generateErrorLogRecord(message);
+    loggingMech.submit(logRecord);
   }
 
   /**
@@ -33,10 +33,9 @@ public class Logger {
    *
    * @param message - message which you want to include to log record
    */
-  @SuppressWarnings("unused")
   public void warn(final String message) {
-    final String record = generateWarnLogRecord(message);
-    loggingMech.submit(record);
+    final String logRecord = generateWarnLogRecord(message);
+    loggingMech.submit(logRecord);
   }
 
   /**
@@ -46,8 +45,8 @@ public class Logger {
    */
   public void info(final String message) {
     if (loggingMech.isInfoLevelLoggingActive()) {
-      final String record = generateInfoLogRecord(message);
-      loggingMech.submit(record);
+      final String logRecord = generateInfoLogRecord(message);
+      loggingMech.submit(logRecord);
     }
   }
 
@@ -58,8 +57,8 @@ public class Logger {
    */
   public void debug(final String message) {
     if (loggingMech.isDebugLevelLoggingActive()) {
-      final String record = generateDebugLogRecord(message);
-      loggingMech.submit(record);
+      final String logRecord = generateDebugLogRecord(message);
+      loggingMech.submit(logRecord);
     }
   }
   
@@ -67,7 +66,6 @@ public class Logger {
     return loggingMech.isErrorLevelLoggingActive();
   }
 
-  @SuppressWarnings("unused")
   public boolean isWarnEnabled() {
     return loggingMech.isWarnLevelLoggingActive();
   }

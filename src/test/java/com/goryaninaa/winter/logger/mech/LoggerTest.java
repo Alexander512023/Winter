@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Alex Goryanin
  */
-@SuppressWarnings("DataFlowIssue")
 public class LoggerTest {
 
   private static final  String PATH = "temp/test/logs";
@@ -48,6 +47,39 @@ public class LoggerTest {
     assertTrue(matcher.find());
   }
 
+  @Test
+  public void error() {
+  }
+
+  @Test
+  public void warn() {
+  }
+
+  @Test
+  public void info() {
+  }
+
+  @Test
+  public void debug() {
+  }
+
+  @Test
+  public void isErrorEnabled() {
+  }
+
+  @Test
+  public void isWarnEnabled() {
+  }
+
+  @Test
+  public void isInfoEnabled() {
+  }
+
+  @Test
+  public void isDebugEnabled() {
+  }
+
+
   private Matcher createMatcherToAssert(final String message) {
     final Pattern pattern = Pattern.compile(
             "\\{\"localDateTime\":\".+?\"," + "\"thread\":\"main\"," + "\"level\":\"ERROR\","
@@ -61,8 +93,7 @@ public class LoggerTest {
   public void deleteLogFile() {
     final String[] logFilesNames = new File(PATH).list();
     for (final String logFileName : logFilesNames) {
-      //noinspection ResultOfMethodCallIgnored
-      new File(PATH + "/" + logFileName).delete(); // NOPMD
+      new File(PATH + "/" + logFileName).delete();
     }
   }
 

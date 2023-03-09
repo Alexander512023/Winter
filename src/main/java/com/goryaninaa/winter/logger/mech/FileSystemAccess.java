@@ -29,11 +29,9 @@ public class FileSystemAccess {
     this.logsDir = new File(properties.getProperty("LoggingMech.logsDirPathUrl"));
     this.bytesPerFile = Long.parseLong(properties.getProperty("LoggingMech.bytesPerFile"));
     this.amountOfLogs = Integer.parseInt(properties.getProperty("LoggingMech.amountOfLogs"));
-    //noinspection ResultOfMethodCallIgnored
-    logsDir.mkdirs();
   }
 
-  protected void writeLog(final String record) {
+  protected void writeLog(final String logRecord) {
     prepare();
     final Path curLogPath = getCurrentLogFilePath();
     try (BufferedWriter writer = Files.newBufferedWriter(curLogPath, StandardCharsets.UTF_8,
@@ -41,13 +39,18 @@ public class FileSystemAccess {
       if (defineCurrentLogFileSize() != 0) {
         writer.newLine();
       }
-      writer.append(record);
+      writer.append(logRecord);
     } catch (IOException e) {
       throw new LoggerException("Problem while working with file system", e);
     }
   }
 
   private void prepare() {
+    prepareDir();
+    prepareLogFile();
+  }
+
+  private void prepareLogFile() {
     if (countLogFiles() == 0) {
       createNewLogFile();
     }
@@ -59,6 +62,12 @@ public class FileSystemAccess {
     }
   }
 
+  private void prepareDir() {
+    if (!Files.exists(logsDir.toPath()) && !logsDir.mkdirs()) {
+        throw new LoggerException("Failed on directory creation");
+    }
+  }
+
   private void removeExcessFiles() {
     final String[] logFileNames = listLogDirectory();
     Arrays.sort(logFileNames);
@@ -66,8 +75,12 @@ public class FileSystemAccess {
     int arrayCounter = 0;
     while (fileCounter > amountOfLogs) {
       fileCounter--;
-      //noinspection ResultOfMethodCallIgnored
-      new File(logsDir.getAbsolutePath() + "/" + logFileNames[arrayCounter++]).delete(); // NOPMD
+      try {
+        Files.delete(Paths.get(
+                logsDir.getAbsolutePath() + "/" + logFileNames[arrayCounter++]));
+      } catch (IOException e) {
+        throw new LoggerException("File deletion failed.", e);
+      }
     }
   }
 
@@ -93,17 +106,17 @@ public class FileSystemAccess {
   }
 
   private void createNewLogFile() {
-    final String logFileName = generateName();
     try {
-      //noinspection ResultOfMethodCallIgnored
-      new File(logsDir, logFileName).createNewFile();
+      if (!new File(logsDir, generateName()).createNewFile()) {
+        throw new LoggerException(
+                "Failed to create a new log file, because file with such name already exists");
+      }
     } catch (IOException e) {
       throw new LoggerException("Failed to create a log file", e);
     }
   }
 
   private String generateName() {
-    //noinspection SpellCheckingInspection
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssn");
     final String datePartOfName = LocalDateTime.now().format(formatter);
     return "ApplicationLog" + datePartOfName + ".txt";

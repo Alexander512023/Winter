@@ -1,6 +1,7 @@
 package com.goryaninaa.winter.web.http.server;
 
 import com.goryaninaa.winter.web.http.server.entity.HttpResponse;
+import com.goryaninaa.winter.web.http.server.exception.ServerException;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -22,8 +23,7 @@ public class RequestHandlerStub implements RequestHandler {
     try {
       countDownLatch.await();
     } catch (InterruptedException e) {
-      e.printStackTrace(); // NOPMD
-      Thread.currentThread().interrupt();
+      throw new ServerException("Interrupted while waiting another threads");
     }
     return new HttpResponse(HttpResponseCode.OK, request);
   }

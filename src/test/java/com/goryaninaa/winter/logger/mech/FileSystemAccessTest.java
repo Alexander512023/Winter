@@ -62,7 +62,9 @@ public class FileSystemAccessTest {
     for (int i = 0; i < 27; i++) {
       fsa.writeLog(HELLO + i);
     }
-    Thread.sleep(50);
+    synchronized (this) {
+      wait(50);
+    }
     final boolean afterTwo = new File(PATH).list().length == 2;
     assertTrue(beforeZero && afterTwo);
   }

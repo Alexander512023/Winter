@@ -137,11 +137,11 @@ public class HttpRequestHandler implements RequestHandler {
   private Optional<Response> invokeMethod(final Method method, final Controller controller,
       final Request httpRequest) {
     Optional<Response> response;
+    final Optional<String> requestBody = httpRequest.getBody();
     try {
-      if (method.getParameterCount() > SINGLE && httpRequest.getBody().isPresent()) {
+      if (method.getParameterCount() > SINGLE && requestBody.isPresent()) {
         final Class<?> clazz = method.getParameterTypes()[1];
-        Object argument;
-        argument = deserializer.deserialize(clazz, httpRequest.getBody().get());
+        final Object argument = deserializer.deserialize(clazz, requestBody.get());
         response = Optional.ofNullable((Response) method.invoke(controller, httpRequest, argument));
       } else {
         response = Optional.ofNullable((Response) method.invoke(controller, httpRequest));

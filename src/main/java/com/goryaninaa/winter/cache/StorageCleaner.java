@@ -3,7 +3,6 @@ package com.goryaninaa.winter.cache;
 import com.goryaninaa.winter.logger.mech.Logger;
 import com.goryaninaa.winter.logger.mech.LoggingMech;
 import com.goryaninaa.winter.logger.mech.StackTraceString;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -40,6 +39,9 @@ public class StorageCleaner<V> {
     this.running = new AtomicBoolean(false);
   }
 
+  /**
+   * Use to run cache storage cleaning.
+   */
   public void run() {
     executorService.submit(this::cleanUp);
     running.set(true);
@@ -48,6 +50,9 @@ public class StorageCleaner<V> {
     }
   }
 
+  /**
+   * Use to shut down cache storage cleaning.
+   */
   public void shutdown() {
     running.set(false);
     executorService.shutdownNow();
@@ -64,7 +69,7 @@ public class StorageCleaner<V> {
 
   private void cleanCache() {
     if (size() > sizeParam) {
-        cleanBelowUses(defineMedianUsage());
+      cleanBelowUses(defineMedianUsage());
     }
     sleep();
   }

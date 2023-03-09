@@ -49,7 +49,7 @@ class StorageTest {
         personDaoStub2.save(person1);
         personDaoStub2.save(person2);
         PersonC personFromDb = personCache2.getData(person1Key).get();
-        System.out.println(personFromDb);
+        System.out.println(personFromDb); // NOPMD
         PersonC personFromCache = personCache2.getData(person1Key).get();
         assertTrue(personDaoStub2.getCallCount() == 1 && person1.equals(personFromCache));
     }
@@ -84,11 +84,11 @@ class StorageTest {
         personDaoStub4.save(person1);
         personDaoStub4.save(person2);
         PersonC personFromDb = personCache4.getData(person1Key).get();
-        System.out.println(personFromDb);
+        System.out.println(personFromDb); // NOPMD
         List<CacheKey> cacheKeys = new ArrayList<>(List.of(person1Key));
         personCache4.remove(cacheKeys);
         personFromDb = personCache4.getData(person1Key).get();
-        System.out.println(personFromDb);
+        System.out.println(personFromDb); // NOPMD
         assertEquals(2, personDaoStub4.getCallCount());
     }
 

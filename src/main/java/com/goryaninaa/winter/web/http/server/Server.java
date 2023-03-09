@@ -136,10 +136,24 @@ public class Server {
   }
 
   private Optional<String> readRequest(final BufferedReader input) throws IOException {
-    final StringBuffer requestString = new StringBuffer();
-    int contentLength = 0;
+    final String requestString = getRequestString(input);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug(requestString);
+    }
+    return Optional.of(requestString);
+  }
+
+  private String getRequestString(BufferedReader input) throws IOException {
     final Pattern patternBodyLength = Pattern.compile("Content-Length");
     final Pattern patternHeadersEnd = Pattern.compile("^$");
+    return getRequestString(input, patternBodyLength, patternHeadersEnd);
+  }
+
+  private String getRequestString(
+          BufferedReader input, Pattern patternBodyLength, Pattern patternHeadersEnd)
+          throws IOException {
+    final StringBuilder requestString = new StringBuilder();
+    int contentLength = 0;
     while (input.ready()) {
       final String currentLine = input.readLine();
       requestString.append(currentLine).append('\n');
@@ -149,23 +163,20 @@ public class Server {
         contentLength = Integer.parseInt(currentLine.split(":")[1].trim());
       }
       if (matcherHeadersEnd.find()) {
-        appendHeaderContentToResult(input, requestString, contentLength);
+        requestString.append(requestBodyToString(input, contentLength));
       }
     }
-    if (LOG.isDebugEnabled()) {
-      LOG.debug(requestString.toString());
-    }
-    return Optional.of(requestString.toString());
+    return requestString.toString();
   }
 
-  private void appendHeaderContentToResult(final BufferedReader input,
-      final StringBuffer requestString, final int contentLength) throws IOException {
-    final char[] charArr = new char[contentLength];
-    //noinspection ResultOfMethodCallIgnored
-    input.read(charArr);
-    for (final char symbol : charArr) {
-      requestString.append(symbol);
+  private String requestBodyToString(final BufferedReader input, final int contentLength)
+          throws IOException {
+    StringBuilder result = new StringBuilder();
+    for (int i = 0; i < contentLength; i++) {
+      char value = (char) input.read();
+      result.append(value);
     }
+    return result.toString();
   }
 
   private void sendResponse(final Response response, final PrintWriter output) {
