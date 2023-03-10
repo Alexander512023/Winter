@@ -103,6 +103,8 @@ public final class LoggingMech {
       this.level = Level.INFO;
     } else if (Level.WARN.toString().equals(levelProperty)) {
       this.level = Level.WARN;
+    } else if (Level.ERROR.toString().equals(levelProperty)) {
+      this.level = Level.ERROR;
     } else {
       throw new IllegalArgumentException("Unsupported LoggingMech.Level property");
     }
