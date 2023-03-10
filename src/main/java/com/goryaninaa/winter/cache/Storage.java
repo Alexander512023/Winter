@@ -51,12 +51,12 @@ public class Storage<V> implements Cache<V> {
         useKey(key);
       }
       cleanCacheIfThereIsNoDataInDao(key, data);
-      //noinspection OptionalGetWithoutIsPresent
-      return data.get().get();
+      return data.orElseThrow().get();
     } catch (InterruptedException | ExecutionException e) {
       if (LOG.isErrorEnabled()) {
         LOG.error(StackTraceString.get(e));
       }
+      Thread.currentThread().interrupt();
       throw new CacheException(e.getMessage(), e);
     }
   }
@@ -75,8 +75,7 @@ public class Storage<V> implements Cache<V> {
 
   private void cleanCacheIfThereIsNoDataInDao(final CacheKey key,
       final Optional<Future<Optional<V>>> data) throws InterruptedException, ExecutionException {
-    //noinspection OptionalGetWithoutIsPresent
-    if (data.get().get().isEmpty()) {
+    if (data.orElseThrow().get().isEmpty()) {
       cacheStorage.remove(key);
     }
   }
@@ -106,8 +105,8 @@ public class Storage<V> implements Cache<V> {
   }
 
   private void useKey(final CacheKey key) {
-    //noinspection OptionalGetWithoutIsPresent
-    final CacheKey cacheKey = cacheStorage.get(key).entrySet().stream().findFirst().get().getKey();
+    final CacheKey cacheKey =
+            cacheStorage.get(key).entrySet().stream().findFirst().orElseThrow().getKey();
     cacheKey.use();
   }
 

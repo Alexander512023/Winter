@@ -16,12 +16,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @SuppressWarnings("SameReturnValue")
 public final class LoggingMech {
 
-  private static volatile LoggingMech instance; // NOPMD
+  private static LoggingMech instance;
   private final AtomicBoolean logging;
   private final Queue<String> loggingTaskQueue = new ConcurrentLinkedQueue<>();
-  private volatile FileSystemAccess fsa; // NOPMD
-  private volatile ExecutorService exec; // NOPMD
-  private volatile Level level; // NOPMD
+  private FileSystemAccess fsa;
+  private ExecutorService exec;
+  private Level level;
 
   private LoggingMech() {
     logging = new AtomicBoolean(false);
@@ -92,6 +92,10 @@ public final class LoggingMech {
     return new Logger(loggingClassName, getInstance());
   }
 
+  public Level getLevel() {
+    return level;
+  }
+
   private void setLevel(final String levelProperty) {
     if (Level.DEBUG.toString().equals(levelProperty)) {
       this.level = Level.DEBUG;
@@ -102,22 +106,6 @@ public final class LoggingMech {
     } else {
       throw new IllegalArgumentException("Unsupported LoggingMech.Level property");
     }
-  }
-
-  /* default */ boolean isDebugLevelLoggingActive() {
-    return level == Level.DEBUG;
-  }
-
-  /* default */ boolean isInfoLevelLoggingActive() {
-    return level == Level.DEBUG || level == Level.INFO;
-  }
-
-  /* default */  boolean isWarnLevelLoggingActive() {
-    return true;
-  }
-
-  /* default */ boolean isErrorLevelLoggingActive() {
-    return true;
   }
 
   /* default */ void submit(final String record) {

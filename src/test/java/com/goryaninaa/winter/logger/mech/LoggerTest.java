@@ -1,5 +1,6 @@
 package com.goryaninaa.winter.logger.mech;
 
+import com.goryaninaa.winter.Waitility;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class LoggerTest {
   @Test
   public void loggerShouldWriteCorrectLogMessageToFs() throws InterruptedException, IOException {
     writeLogMessageToLogFileOnFs();
-    Thread.sleep(25);
+    Waitility.waitExecution(this, 25);
     final String message = readWrittenMessageFromLogFileOnFs();
     final Matcher matcher = createMatcherToAssert(message);
     assertTrue(matcher.find());
@@ -109,7 +110,7 @@ public class LoggerTest {
     LoggingMech.getInstance().startLogging();
     final Logger logger = LoggingMech.getLogger(this.getClass().getCanonicalName());
     logger.error("Test");
-    TimeUnit.MILLISECONDS.sleep(40);
+    Waitility.waitExecution(this, 40);
     LoggingMech.getInstance().stopLogging();
   }
 

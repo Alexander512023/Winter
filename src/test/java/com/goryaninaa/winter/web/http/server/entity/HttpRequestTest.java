@@ -7,7 +7,6 @@ import com.goryaninaa.winter.web.http.server.annotation.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("OptionalGetWithoutIsPresent")
 class HttpRequestTest {
   private String request;
 
@@ -63,8 +62,10 @@ class HttpRequestTest {
   @Test
   void httpRequestShouldDefineParametersOnCreation() {
     final HttpRequest httpRequest = new HttpRequest(request);
-    assertAll(() -> assertEquals("2", httpRequest.getParameterByName("1+1").get()),
-        () -> assertEquals("5", httpRequest.getParameterByName("2+3").get()));
+    assertAll(
+            () -> assertEquals("2", httpRequest.getParameterByName("1+1").get()),
+            () -> assertEquals("5", httpRequest.getParameterByName("2+3").get())
+    );
   }
 
   @Test

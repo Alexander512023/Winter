@@ -64,7 +64,7 @@ public class FileSystemAccess {
 
   private void prepareDir() {
     if (!Files.exists(logsDir.toPath()) && !logsDir.mkdirs()) {
-        throw new LoggerException("Failed on directory creation");
+      throw new LoggerException("Failed on directory creation");
     }
   }
 

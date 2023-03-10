@@ -7,6 +7,6 @@ package com.goryaninaa.winter.logger.mech;
  */
 public enum Level {
 
-  DEBUG, INFO, WARN
+  DEBUG, INFO, WARN, ERROR
 
 }

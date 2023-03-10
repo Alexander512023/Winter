@@ -108,6 +108,7 @@ public class StorageCleaner<V> {
       if (LOG.isErrorEnabled()) {
         LOG.error(StackTraceString.get(e));
       }
+      Thread.currentThread().interrupt();
       throw new CacheException("Cache clean up failed due to thread interruption", e);
     }
   }

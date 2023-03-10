@@ -1,5 +1,6 @@
 package com.goryaninaa.winter.cache;
 
+import com.goryaninaa.winter.Waitility;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +43,7 @@ class StorageCleanerTest {
     void storageCleanerShouldMaintainCacheSize() throws InterruptedException {
         preparator1.doWork();
         storageCleaner1.run();
-        Thread.sleep(50);
+        Waitility.waitExecution(this, 50);
         storageCleaner1.shutdown();
         assertEquals(3, cacheStorage1.size());
     }
@@ -51,7 +52,7 @@ class StorageCleanerTest {
     void storageCleanerShouldKeepHighlyDesiredData() throws InterruptedException {
         preparator2.doWork();
         storageCleaner2.run();
-        Thread.sleep(50);
+        Waitility.waitExecution(this, 50);
         storageCleaner2.shutdown();
         assertTrue(isConfirmed(cacheStorage2));
     }
@@ -60,11 +61,11 @@ class StorageCleanerTest {
     void storageCleanerShouldNotWorkAfterShutdown() throws InterruptedException {
         preparator3.doWork();
         storageCleaner3.run();
-        Thread.sleep(50);
+        Waitility.waitExecution(this, 50);
         storageCleaner3.shutdown();
-        Thread.sleep(50);
+        Waitility.waitExecution(this, 50);
         preparator3.doWork();
-        Thread.sleep(50);
+        Waitility.waitExecution(this, 50);
         assertEquals(5, cacheStorage3.size());
     }
 

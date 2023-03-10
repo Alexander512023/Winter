@@ -219,7 +219,8 @@ public class JsonDeserializer implements Deserializer { // NOPMD
   private String replaceExcessCommas(final String jsonString) {
     final StringBuilder res = new StringBuilder();
     int pos = 0;
-    final Pattern pattern = Pattern.compile("((?s)\\{.*?})|(\".*?\")|((?s)\\[.*?])");
+    final Pattern pattern = Pattern.compile(
+            "((?s)\\{[^}]*?})|(\"[^\"]*?\")|((?s)\\[[^]]*?])");
     final Matcher matcher = pattern.matcher(jsonString);
     while (matcher.find()) {
       if (jsonString.substring(matcher.start(), matcher.end()).contains(",")) {

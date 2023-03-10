@@ -88,6 +88,7 @@ public class HttpResponse implements Response {
     headers.put("Content-Type", value);
     headers.put("Content-Length", String.valueOf(body.getBytes(StandardCharsets.UTF_8).length));
   }
+
   private void defineHeaders() {
     headers = new LinkedHashMap<>(15, 0.75f, false);
     headers.put("Server", "RagingServer");

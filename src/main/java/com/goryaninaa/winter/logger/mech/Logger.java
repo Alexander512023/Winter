@@ -12,7 +12,7 @@ public class Logger {
   private final String loggingClassName;
   private final LoggingMech loggingMech;
 
-  public Logger(final String loggingClassName, final LoggingMech loggingMech) {
+  /* default */ Logger(final String loggingClassName, final LoggingMech loggingMech) {
     this.loggingClassName = loggingClassName;
     this.loggingMech = loggingMech;
   }
@@ -24,8 +24,10 @@ public class Logger {
    * @param message - message which you want to include to log record
    */
   public void error(final String message) {
-    final String logRecord = generateErrorLogRecord(message);
-    loggingMech.submit(logRecord);
+    if (isErrorEnabled()) {
+      final String logRecord = generateErrorLogRecord(message);
+      loggingMech.submit(logRecord);
+    }
   }
 
   /**
@@ -34,8 +36,10 @@ public class Logger {
    * @param message - message which you want to include to log record
    */
   public void warn(final String message) {
-    final String logRecord = generateWarnLogRecord(message);
-    loggingMech.submit(logRecord);
+    if (isWarnEnabled()) {
+      final String logRecord = generateWarnLogRecord(message);
+      loggingMech.submit(logRecord);
+    }
   }
 
   /**
@@ -44,7 +48,7 @@ public class Logger {
    * @param message - message which you want to include to log record
    */
   public void info(final String message) {
-    if (loggingMech.isInfoLevelLoggingActive()) {
+    if (isInfoEnabled()) {
       final String logRecord = generateInfoLogRecord(message);
       loggingMech.submit(logRecord);
     }
@@ -56,26 +60,51 @@ public class Logger {
    * @param message - message which you want to include to log record
    */
   public void debug(final String message) {
-    if (loggingMech.isDebugLevelLoggingActive()) {
+    if (isDebugEnabled()) {
       final String logRecord = generateDebugLogRecord(message);
       loggingMech.submit(logRecord);
     }
   }
-  
+
+  /**
+   * Use this method to check, before logging.
+   *
+   * @return true if error level of logging enabled on the opposite - false.
+   */
   public boolean isErrorEnabled() {
-    return loggingMech.isErrorLevelLoggingActive();
+    Level level = loggingMech.getLevel();
+    return level == Level.DEBUG
+            || level == Level.INFO || level == Level.WARN || level == Level.ERROR;
   }
 
+  /**
+   * Use this method to check, before logging.
+   *
+   * @return true if warn level of logging enabled on the opposite - false.
+   */
   public boolean isWarnEnabled() {
-    return loggingMech.isWarnLevelLoggingActive();
+    Level level = loggingMech.getLevel();
+    return level == Level.DEBUG || level == Level.INFO || level == Level.WARN;
   }
 
+  /**
+   * Use this method to check, before logging.
+   *
+   * @return true if info level of logging enabled on the opposite - false.
+   */
   public boolean isInfoEnabled() {
-    return loggingMech.isInfoLevelLoggingActive();
+    Level level = loggingMech.getLevel();
+    return level == Level.DEBUG || level == Level.INFO;
   }
 
+  /**
+   * Use this method to check, before logging.
+   *
+   * @return true if debug level of logging enabled on the opposite - false.
+   */
   public boolean isDebugEnabled() {
-    return loggingMech.isDebugLevelLoggingActive();
+    Level level = loggingMech.getLevel();
+    return level == Level.DEBUG;
   }
 
   private String generateErrorLogRecord(final String message) {
