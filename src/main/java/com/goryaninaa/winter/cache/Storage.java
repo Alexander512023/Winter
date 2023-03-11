@@ -21,7 +21,7 @@ import java.util.concurrent.FutureTask;
 public class Storage<V> implements Cache<V> {
 
   private final Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorage;
-  private final DataAccessObject<V> dao;
+  private final DataMediator<V> dao;
   private static final Logger LOG = LoggingMech.getLogger(Storage.class.getCanonicalName());
 
   /**
@@ -29,7 +29,7 @@ public class Storage<V> implements Cache<V> {
    *
    * @param dao - DAO of cached entity
    */
-  public Storage(final DataAccessObject<V> dao,
+  public Storage(final DataMediator<V> dao,
                  final Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorageMap) {
     this.dao = dao;
     this.cacheStorage = cacheStorageMap;

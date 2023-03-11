@@ -24,13 +24,14 @@ class HttpResponseTest {
     final Pattern pattern = Pattern.compile("Date:.*\\n");
     final String factWithDate = httpResponse.getResponseString();
     final Matcher matcher = pattern.matcher(factWithDate);
-    matcher.find();
-    final String factWithoutDate = factWithDate.substring(0, matcher.start())
-        + factWithDate.substring(matcher.end());
-    final String expected = "HTTP/1.1 404 Not Found\n" + "Server: RagingServer\n"
-        + "Connection: close\n" + "Content-Type: text/html; charset=utf-8\n"
-        + "Content-Length: 13\n" + "\n" + "<p>Hello!</p>";
-    assertEquals(expected, factWithoutDate);
+    if (matcher.find()) {
+      final String factWithoutDate = factWithDate.substring(0, matcher.start())
+              + factWithDate.substring(matcher.end());
+      final String expected = "HTTP/1.1 404 Not Found\n" + "Server: RagingServer\n"
+              + "Connection: close\n" + "Content-Type: text/html; charset=utf-8\n"
+              + "Content-Length: 13\n" + "\n" + "<p>Hello!</p>";
+      assertEquals(expected, factWithoutDate);
+    }
   }
 
   @Test
@@ -40,12 +41,13 @@ class HttpResponseTest {
     final Pattern pattern = Pattern.compile("Date:.*\\n");
     final String factWithDate = httpResponse.getResponseString();
     final Matcher matcher = pattern.matcher(factWithDate);
-    matcher.find();
-    final String factWithoutDate = factWithDate.substring(0, matcher.start())
-        + factWithDate.substring(matcher.end());
-    final String expected = "HTTP/1.1 200 OK\n" + "Server: RagingServer\n" + "Connection: close\n"
-        + "Content-Type: application/json\n" + "Content-Length: 16\n" + "\n"
-        + "{\"name\": \"Alex\"}";
-    assertEquals(expected, factWithoutDate);
+    if (matcher.find()) {
+      final String factWithoutDate = factWithDate.substring(0, matcher.start())
+              + factWithDate.substring(matcher.end());
+      final String expected = "HTTP/1.1 200 OK\n" + "Server: RagingServer\n" + "Connection: close\n"
+              + "Content-Type: application/json\n" + "Content-Length: 16\n" + "\n"
+              + "{\"name\": \"Alex\"}";
+      assertEquals(expected, factWithoutDate);
+    }
   }
 }

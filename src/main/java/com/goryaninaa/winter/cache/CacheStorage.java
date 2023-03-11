@@ -25,7 +25,7 @@ public class CacheStorage<V> implements Cache<V> {
    * @param dao - DAO with witch this cache should interact
    * @param properties - app properties
    */
-  public CacheStorage(final DataAccessObject<V> dao, final Properties properties) {
+  public CacheStorage(final DataMediator<V> dao, final Properties properties) {
     Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorageMap =
             new ConcurrentHashMap<>();
     this.storage = new Storage<>(dao, cacheStorageMap);

@@ -1,11 +1,10 @@
 package com.goryaninaa.winter.web.http.server.request.handler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HttpRequestHandlerTest {
   private static HttpRequestHandler requestHandler;
@@ -24,7 +23,6 @@ class HttpRequestHandlerTest {
   })
   void handle(String request, int code, String message) {
     final int fact = requestHandler.handle(request).getCode().getCode();
-    final int expected = code;
-    assertEquals(expected, fact, message);
+    assertEquals(code, fact, message);
   }
 }

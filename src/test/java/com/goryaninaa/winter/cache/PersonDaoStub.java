@@ -1,28 +1,17 @@
 package com.goryaninaa.winter.cache;
 
-import javax.naming.OperationNotSupportedException;
-import java.util.Map;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
-public class PersonDaoStub extends DataAccessObject<PersonC> {
+public class PersonDaoStub {
 
-    private int callCount;
-    public PersonDaoStub(Map<String, DataAccessStrategy<PersonC>> dataAccesses) {
-        super(dataAccesses);
+    private final List<PersonC> personCList = new ArrayList<>();
+
+    public void save(PersonC personC) {
+        personCList.add(personC);
     }
 
-    public void save(PersonC person) {
-        super.getDataList().add(person);
-    }
-
-    public int getCallCount() {
-        return callCount;
-    }
-
-    @Override
-    protected Optional<PersonC> getData(final Object key, final String accessType)
-            throws OperationNotSupportedException {
-        callCount++;
-        return super.getData(key, accessType);
+    public PersonC getOneById(int id) {
+        return personCList.stream().filter(personC -> personC.getId() == id).findFirst().orElseThrow();
     }
 }

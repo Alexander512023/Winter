@@ -110,14 +110,14 @@ public final class LoggingMech {
     }
   }
 
-  /* default */ void submit(final String record) {
-    loggingTaskQueue.add(record);
+  /* default */ void submit(final String logRecord) {
+    loggingTaskQueue.add(logRecord);
   }
 
   private void logRecord() {
-    final String record = loggingTaskQueue.poll();
-    fsa.writeLog(record);
-    System.out.println(record); // NOPMD
+    final String logRecord = loggingTaskQueue.poll();
+    fsa.writeLog(logRecord);
+    System.out.println(logRecord);
   }
 
   private void runLog() {

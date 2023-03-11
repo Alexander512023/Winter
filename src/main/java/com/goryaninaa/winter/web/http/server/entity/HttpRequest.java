@@ -126,9 +126,9 @@ public class HttpRequest implements Request {
   }
 
   private void defineMapping() {
-    final Pattern pttrnWithParams = Pattern.compile("/[-a-zA-Z0-9@:%._\\+~#=/]+?\\?");
+    final Pattern pttrnWithParams = Pattern.compile("/[-a-zA-Z0-9@:%._+~#=/]+?\\?");
     final Matcher mtchrWithParams = pttrnWithParams.matcher(request);
-    final Pattern pttrnWithNoParams = Pattern.compile("/[-a-zA-Z0-9@:%._\\+~#=/]*?\\s");
+    final Pattern pttrnWithNoParams = Pattern.compile("/[-a-zA-Z0-9@:%._+~#=/]*?\\s");
     final Matcher mtchrWithNoParams = pttrnWithNoParams.matcher(request);
     if (mtchrWithParams.find()) {
       this.mapping = request.substring(mtchrWithParams.start(), mtchrWithParams.end() - 1).trim();
@@ -140,7 +140,7 @@ public class HttpRequest implements Request {
   }
 
   private void defineParameters() {
-    final Optional<String> parametersString = Optional.ofNullable(cutParametersString());
+    final Optional<String> parametersString = cutParametersString();
     if (parametersString.isPresent()) {
       final String[] lines = parametersString.get().split("&");
       for (final String line : lines) {
@@ -149,12 +149,12 @@ public class HttpRequest implements Request {
     }
   }
 
-  private String cutParametersString() {
+  private Optional<String> cutParametersString() {
     final Pattern pattern = Pattern.compile("\\?\\S+?\\s");
     final Matcher matcher = pattern.matcher(request);
-    String cuttedParamString = "";
+    Optional<String> cuttedParamString = Optional.empty();
     if (matcher.find()) {
-      cuttedParamString = request.substring(matcher.start() + 1, matcher.end()).trim();
+      cuttedParamString = Optional.of(request.substring(matcher.start() + 1, matcher.end()).trim());
     }
     return cuttedParamString;
   }

@@ -1,6 +1,5 @@
 package com.goryaninaa.winter.cache;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -11,7 +10,7 @@ import java.util.Optional;
  */
 public interface DataAccessStrategy<V> {
 
-  Optional<V> getData(Object key, List<V> data);
+  Optional<V> getData(Object key);
 
   @SuppressWarnings("SameReturnValue")
   String getStrategyType();

@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -39,11 +40,13 @@ public class LoggerTest {
 
   @After
   @Before
-  public void deleteLogFile() {
+  public void deleteLogFile() throws NoSuchFileException {
     final String[] logFilesNames = new File(PATH).list();
     if (logFilesNames != null) {
       for (final String logFileName : logFilesNames) {
-        new File(PATH + "/" + logFileName).delete();
+        if (!new File(PATH + "/" + logFileName).delete()) {
+          throw new NoSuchFileException("No such file");
+        }
       }
     }
   }
@@ -166,9 +169,14 @@ public class LoggerTest {
   }
 
   private String readWrittenMessageFromLogFileOnFs() throws IOException {
-    try (BufferedReader reader = Files
-        .newBufferedReader(Paths.get(PATH + "/" + new File(PATH).list()[0]))) {
-      return reader.readLine();
+    String[] fileNames = new File(PATH).list();
+    if (fileNames != null) {
+      try (BufferedReader reader = Files
+              .newBufferedReader(Paths.get(PATH + "/" + fileNames[0]))) {
+        return reader.readLine();
+      }
+    } else {
+      throw new NoSuchFileException("No such file.");
     }
   }
 

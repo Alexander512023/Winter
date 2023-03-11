@@ -40,7 +40,7 @@ class HttpRequestTest {
   void httpRequestShouldDefineBodyOnCreation() {
     final HttpRequest httpRequest = new HttpRequest(request);
     final String expected = "licenseID=string&content=string&/paramsXML=string";
-    final String fact = httpRequest.getBody().get();
+    final String fact = httpRequest.getBody().orElseThrow();
     assertEquals(expected, fact, "Body is not defined correctly");
   }
 
@@ -49,29 +49,29 @@ class HttpRequestTest {
     final HttpRequest httpRequest = new HttpRequest(request);
     assertAll(
         () -> assertEquals("Mozilla/4.0 (compatible; MSIE5.01; Windows NT)",
-            httpRequest.getHeaderByName("User-Agent").get()),
-        () -> assertEquals("www.tutorialspoint.com", httpRequest.getHeaderByName("Host").get()),
+            httpRequest.getHeaderByName("User-Agent").orElseThrow()),
+        () -> assertEquals("www.tutorialspoint.com", httpRequest.getHeaderByName("Host").orElseThrow()),
         () -> assertEquals("application/x-www-form-urlencoded",
-            httpRequest.getHeaderByName("Content-Type").get()),
-        () -> assertEquals("length", httpRequest.getHeaderByName("Content-Length").get()),
-        () -> assertEquals("en-us", httpRequest.getHeaderByName("Accept-Language").get()),
-        () -> assertEquals("gzip, deflate", httpRequest.getHeaderByName("Accept-Encoding").get()),
-        () -> assertEquals("Keep-Alive", httpRequest.getHeaderByName("Connection").get()));
+            httpRequest.getHeaderByName("Content-Type").orElseThrow()),
+        () -> assertEquals("length", httpRequest.getHeaderByName("Content-Length").orElseThrow()),
+        () -> assertEquals("en-us", httpRequest.getHeaderByName("Accept-Language").orElseThrow()),
+        () -> assertEquals("gzip, deflate", httpRequest.getHeaderByName("Accept-Encoding").orElseThrow()),
+        () -> assertEquals("Keep-Alive", httpRequest.getHeaderByName("Connection").orElseThrow()));
   }
 
   @Test
   void httpRequestShouldDefineParametersOnCreation() {
     final HttpRequest httpRequest = new HttpRequest(request);
     assertAll(
-            () -> assertEquals("2", httpRequest.getParameterByName("1+1").get()),
-            () -> assertEquals("5", httpRequest.getParameterByName("2+3").get())
+            () -> assertEquals("2", httpRequest.getParameterByName("1+1").orElseThrow()),
+            () -> assertEquals("5", httpRequest.getParameterByName("2+3").orElseThrow())
     );
   }
 
   @Test
   void httpRequestShouldProvideControllerMapping() {
     final HttpRequest httpRequest = new HttpRequest(request);
-    assertEquals("/", httpRequest.getControllerMapping(1).get(),
+    assertEquals("/", httpRequest.getControllerMapping(1).orElseThrow(),
         "Controller mapping doesn't provided correctly");
   }
 }

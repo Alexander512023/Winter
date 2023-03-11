@@ -10,7 +10,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Alex Goryanin
  */
-@SuppressWarnings("unused")
 public class CacheKeyFactory {
 
   private final Map<String, KeyExtractStrategy> cacheKeyCatalog;
@@ -29,6 +28,7 @@ public class CacheKeyFactory {
    * @param entity - value-object, that you want to delete from cache
    * @return - list of all possible cache keys for passed object
    */
+  @SuppressWarnings("unused")
   public List<CacheKey> generateAllCacheKeys(final Object entity) {
     final List<CacheKey> allKeysForEntity = new CopyOnWriteArrayList<>();
     for (final Entry<String, KeyExtractStrategy> specification : cacheKeyCatalog.entrySet()) {
