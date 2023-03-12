@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
  * @author Alex Goryanin
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PatchMapping {
+public @interface Mapping {
 
   /**
    * This method serves to designate mapping.
@@ -17,5 +17,7 @@ public @interface PatchMapping {
    * @return supported mapping
    */
   String value();
+
+  HttpMethod httpMethod();
 
 }

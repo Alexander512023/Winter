@@ -89,10 +89,9 @@ public class JsonSerializer {
   private <T> String defineFieldValue(final T object, final Type type, final Method getter) // NOPMD
       throws IllegalAccessException, InvocationTargetException {
     String fieldValue;
-    if (type.equals(int.class) || type.equals(double.class) || type.equals(Boolean.class)) {
+    if (isPrimitive(type)) {
       fieldValue = valueOfPrimitive(object, getter);
-    } else if (type.equals(String.class) || type.equals(LocalDate.class) || type.equals(Date.class)
-        || type.equals(LocalDateTime.class) || type.equals(Integer.class)) {
+    } else if (isWrapper(type) || isDate(type)) {
       fieldValue = valueOfString(object, getter);
     } else if (type.equals(List.class)) {
       fieldValue = valueOfList(object, getter);
@@ -100,6 +99,18 @@ public class JsonSerializer {
       fieldValue = valueOfObject(object, getter);
     }
     return fieldValue;
+  }
+
+  private boolean isDate(Type type) {
+    return type.equals(LocalDate.class) || type.equals(Date.class) || type.equals(LocalDateTime.class);
+  }
+
+  private boolean isWrapper(Type type) {
+    return type.equals(String.class) || type.equals(Integer.class);
+  }
+
+  private boolean isPrimitive(Type type) {
+    return type.equals(int.class) || type.equals(double.class) || type.equals(Boolean.class);
   }
 
   private <T> String valueOfObject(final T object, final Method getter)

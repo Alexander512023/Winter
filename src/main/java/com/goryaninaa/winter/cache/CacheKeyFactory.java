@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Alex Goryanin
  */
-public class CacheKeyFactory {
+public final class CacheKeyFactory {
 
   private final Map<String, KeyExtractStrategy> cacheKeyCatalog;
 

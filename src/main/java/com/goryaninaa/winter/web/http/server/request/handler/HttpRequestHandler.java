@@ -8,12 +8,7 @@ import com.goryaninaa.winter.web.http.server.HttpResponseCode;
 import com.goryaninaa.winter.web.http.server.Request;
 import com.goryaninaa.winter.web.http.server.RequestHandler;
 import com.goryaninaa.winter.web.http.server.Response;
-import com.goryaninaa.winter.web.http.server.annotation.DeleteMapping;
-import com.goryaninaa.winter.web.http.server.annotation.GetMapping;
-import com.goryaninaa.winter.web.http.server.annotation.HttpMethod;
-import com.goryaninaa.winter.web.http.server.annotation.PatchMapping;
-import com.goryaninaa.winter.web.http.server.annotation.PostMapping;
-import com.goryaninaa.winter.web.http.server.annotation.PutMapping;
+import com.goryaninaa.winter.web.http.server.annotation.Mapping;
 import com.goryaninaa.winter.web.http.server.annotation.RequestMapping;
 import com.goryaninaa.winter.web.http.server.exception.ClientException;
 import com.goryaninaa.winter.web.http.server.exception.ServerException;
@@ -75,17 +70,17 @@ public class HttpRequestHandler implements RequestHandler {
       if (httpResponse.isPresent()) {
         result = httpResponse.get();
       }
-      return result; // NOPMD
+      return result;
     } catch (ClientException e) {
       if (LOG.isErrorEnabled()) {
         LOG.error(StackTraceString.get(e));
       }
-      return out.httpResponseFrom(HttpResponseCode.NOTFOUND); // NOPMD
-    } catch (RuntimeException e) { // NOPMD
+      return out.httpResponseFrom(HttpResponseCode.NOTFOUND);
+    } catch (RuntimeException e) {
       if (LOG.isErrorEnabled()) {
         LOG.error(StackTraceString.get(e));
       }
-      return out.httpResponseFrom(HttpResponseCode.INTERNALSERVERERROR); // NOPMD
+      return out.httpResponseFrom(HttpResponseCode.INTERNALSERVERERROR);
     }
   }
 
@@ -116,22 +111,27 @@ public class HttpRequestHandler implements RequestHandler {
   }
 
   private Optional<Response> manage(final Controller controller, final Request httpRequest) {
-    final Method[] methods = controller.getClass().getDeclaredMethods();
-    Optional<Method> handlerMethod = Optional.empty();
-    final int cMappingLength = controller.getClass().getAnnotation(RequestMapping.class).value()
-        .length();
-    for (final Method method : methods) {
-      final String methodMapping = defineMethodMappingIfHttpMethodMatch(method, httpRequest);
-      final String requestMapping = httpRequest.getMapping().substring(cMappingLength);
-      if (methodMapping.equals(requestMapping)) {
-        handlerMethod = Optional.of(method);
-      }
-    }
+    Optional<Method> handlerMethod = getHandlerMethod(controller, httpRequest);
     Optional<Response> httpResponse = Optional.empty();
     if (handlerMethod.isPresent()) {
       httpResponse = invokeMethod(handlerMethod.get(), controller, httpRequest);
     }
     return httpResponse;
+  }
+
+  private Optional<Method> getHandlerMethod(Controller controller, Request httpRequest) {
+    final Method[] methods = controller.getClass().getDeclaredMethods();
+    Optional<Method> handlerMethod = Optional.empty();
+    final int contrMppngLen = controller.getClass().getAnnotation(RequestMapping.class).value()
+        .length();
+    for (final Method method : methods) {
+      final String methodMapping = defineMethodMappingIfHttpMethodMatch(method, httpRequest);
+      final String requestMapping = httpRequest.getMapping().substring(contrMppngLen);
+      if (methodMapping.equals(requestMapping)) {
+        handlerMethod = Optional.of(method);
+      }
+    }
+    return handlerMethod;
   }
 
   private Optional<Response> invokeMethod(final Method method, final Controller controller,
@@ -157,25 +157,18 @@ public class HttpRequestHandler implements RequestHandler {
 
   private String defineMethodMappingIfHttpMethodMatch(final Method method, // NOPMD
       final Request httpRequest) {
-    String result = "";
+    String methodMapping = "";
     for (final Annotation annotation : method.getAnnotations()) {
-      if (annotation.annotationType().equals(GetMapping.class)
-          && httpRequest.getMethod().equals(HttpMethod.GET)) {
-        result = method.getAnnotation(GetMapping.class).value();
-      } else if (annotation.annotationType().equals(PostMapping.class)
-          && httpRequest.getMethod().equals(HttpMethod.POST)) {
-        result = method.getAnnotation(PostMapping.class).value();
-      } else if (annotation.annotationType().equals(PutMapping.class)
-          && httpRequest.getMethod().equals(HttpMethod.PUT)) {
-        result = method.getAnnotation(PutMapping.class).value();
-      } else if (annotation.annotationType().equals(PatchMapping.class)
-          && httpRequest.getMethod().equals(HttpMethod.PATCH)) {
-        result = method.getAnnotation(PatchMapping.class).value();
-      } else if (annotation.annotationType().equals(DeleteMapping.class)
-          && httpRequest.getMethod().equals(HttpMethod.DELETE)) {
-        result = method.getAnnotation(DeleteMapping.class).value();
+      if (annotation.annotationType().equals(Mapping.class)
+              && isHttpMethodMatch(httpRequest, annotation)) {
+        methodMapping = method.getAnnotation(Mapping.class).value();
+        break;
       }
     }
-    return result;
+    return methodMapping;
+  }
+
+  private boolean isHttpMethodMatch(Request httpRequest, Annotation annotation) {
+    return httpRequest.getMethod().equals(((Mapping)annotation).httpMethod());
   }
 }

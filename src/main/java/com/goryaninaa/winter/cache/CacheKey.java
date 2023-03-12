@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Alex Goryanin
  */
-public class CacheKey {
+public final class CacheKey {
 
   private final Object key;
   private final String operationType;
