@@ -143,14 +143,15 @@ public class Server {
     return Optional.of(requestString);
   }
 
-  private String getRequestString(BufferedReader input) throws IOException {
+  private String getRequestString(final BufferedReader input) throws IOException {
     final Pattern patternBodyLength = Pattern.compile("Content-Length");
     final Pattern patternHeadersEnd = Pattern.compile("^$");
     return getRequestString(input, patternBodyLength, patternHeadersEnd);
   }
 
   private String getRequestString(
-          BufferedReader input, Pattern patternBodyLength, Pattern patternHeadersEnd)
+          final BufferedReader input, final Pattern patternBodyLength,
+          final Pattern patternHeadersEnd)
           throws IOException {
     final StringBuilder requestString = new StringBuilder();
     int contentLength = 0;
@@ -171,9 +172,9 @@ public class Server {
 
   private String requestBodyToString(final BufferedReader input, final int contentLength)
           throws IOException {
-    StringBuilder result = new StringBuilder();
+    final StringBuilder result = new StringBuilder();
     for (int i = 0; i < contentLength; i++) {
-      char value = (char) input.read();
+      final char value = (char) input.read();
       result.append(value);
     }
     return result.toString();
