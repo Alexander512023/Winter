@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
  *
  * @author Alex Goryanin
  */
-public class Logger {
+public class Logger { // NOPMD
 
   private final String loggingClassName;
   private final LoggingMech loggingMech;
@@ -72,7 +72,7 @@ public class Logger {
    * @return true if error level of logging enabled on the opposite - false.
    */
   public boolean isErrorEnabled() {
-    Level level = loggingMech.getLevel();
+    final Level level = loggingMech.getLevel();
     return level == Level.DEBUG
             || level == Level.INFO || level == Level.WARN || level == Level.ERROR;
   }
@@ -83,7 +83,7 @@ public class Logger {
    * @return true if warn level of logging enabled on the opposite - false.
    */
   public boolean isWarnEnabled() {
-    Level level = loggingMech.getLevel();
+    final Level level = loggingMech.getLevel();
     return level == Level.DEBUG || level == Level.INFO || level == Level.WARN;
   }
 
@@ -93,7 +93,7 @@ public class Logger {
    * @return true if info level of logging enabled on the opposite - false.
    */
   public boolean isInfoEnabled() {
-    Level level = loggingMech.getLevel();
+    final Level level = loggingMech.getLevel();
     return level == Level.DEBUG || level == Level.INFO;
   }
 
@@ -103,7 +103,7 @@ public class Logger {
    * @return true if debug level of logging enabled on the opposite - false.
    */
   public boolean isDebugEnabled() {
-    Level level = loggingMech.getLevel();
+    final Level level = loggingMech.getLevel();
     return level == Level.DEBUG;
   }
 
