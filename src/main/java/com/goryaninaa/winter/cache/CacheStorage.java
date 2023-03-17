@@ -14,7 +14,6 @@ import java.util.concurrent.Future;
  * @author Alex Goryanin
  * @param <V> - entity object, which will be cached
  */
-@SuppressWarnings("unused")
 public class CacheStorage<V> implements Cache<V> {
 
   private final Storage<V> storage;

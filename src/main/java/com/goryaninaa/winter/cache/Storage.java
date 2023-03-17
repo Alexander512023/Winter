@@ -101,7 +101,7 @@ public class Storage<V> implements Cache<V> {
   }
 
   private Callable<Optional<V>> getFromDao(final CacheKey key) {
-    return () -> Storage.this.dao.getData(key.getKey(), key.getOperationType());
+    return () -> dao.getData(key.getKey(), key.getOperationType());
   }
 
   private void useKey(final CacheKey key) {
