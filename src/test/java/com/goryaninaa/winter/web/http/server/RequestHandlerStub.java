@@ -30,7 +30,7 @@ public class RequestHandlerStub implements RequestHandler {
 
   @Override
   public void addController(final Controller controller) {
-    // TODO Auto-generated method stub
+
   }
 
 }

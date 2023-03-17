@@ -42,7 +42,6 @@ public class RequestStub implements Request {
 
   @Override
   public Optional<String> getBody() {
-    // TODO Auto-generated method stub
     return Optional.empty();
   }
 

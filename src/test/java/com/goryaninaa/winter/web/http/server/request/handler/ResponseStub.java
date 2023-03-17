@@ -18,7 +18,6 @@ public class ResponseStub implements Response {
 
   @Override
   public String getResponseString() {
-    // TODO Auto-generated method stub
     return null;
   }
 
