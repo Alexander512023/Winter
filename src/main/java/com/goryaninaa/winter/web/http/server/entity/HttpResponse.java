@@ -58,7 +58,7 @@ public class HttpResponse implements Response {
    */
   public <T> HttpResponse(final HttpResponseCode httpResponseCode, final T responseObject) {
     this.httpResponseCode = httpResponseCode;
-    JsonSerializer serializer = new JsonSerializer();
+    final JsonSerializer serializer = new JsonSerializer();
     final String body = serializer.serialize(responseObject);
     defineHeaders("application/json", body);
     this.response = combine(httpResponseCode, body);

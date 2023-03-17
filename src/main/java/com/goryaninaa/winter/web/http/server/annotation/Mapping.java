@@ -18,6 +18,11 @@ public @interface Mapping {
    */
   String value();
 
+  /**
+   * This method serves to define HTTP method.
+   *
+   * @return {@link HttpMethod}
+   */
   HttpMethod httpMethod();
 
 }

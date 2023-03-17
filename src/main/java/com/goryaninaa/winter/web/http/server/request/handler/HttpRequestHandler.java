@@ -70,17 +70,17 @@ public class HttpRequestHandler implements RequestHandler {
       if (httpResponse.isPresent()) {
         result = httpResponse.get();
       }
-      return result;
+      return result; // NOPMD
     } catch (ClientException e) {
       if (LOG.isErrorEnabled()) {
         LOG.error(StackTraceString.get(e));
       }
-      return out.httpResponseFrom(HttpResponseCode.NOTFOUND);
-    } catch (RuntimeException e) {
+      return out.httpResponseFrom(HttpResponseCode.NOTFOUND); // NOPMD
+    } catch (RuntimeException e) { // NOPMD
       if (LOG.isErrorEnabled()) {
         LOG.error(StackTraceString.get(e));
       }
-      return out.httpResponseFrom(HttpResponseCode.INTERNALSERVERERROR);
+      return out.httpResponseFrom(HttpResponseCode.INTERNALSERVERERROR); // NOPMD
     }
   }
 
@@ -111,7 +111,7 @@ public class HttpRequestHandler implements RequestHandler {
   }
 
   private Optional<Response> manage(final Controller controller, final Request httpRequest) {
-    Optional<Method> handlerMethod = getHandlerMethod(controller, httpRequest);
+    final Optional<Method> handlerMethod = getHandlerMethod(controller, httpRequest);
     Optional<Response> httpResponse = Optional.empty();
     if (handlerMethod.isPresent()) {
       httpResponse = invokeMethod(handlerMethod.get(), controller, httpRequest);
@@ -119,7 +119,8 @@ public class HttpRequestHandler implements RequestHandler {
     return httpResponse;
   }
 
-  private Optional<Method> getHandlerMethod(Controller controller, Request httpRequest) {
+  private Optional<Method> getHandlerMethod(final Controller controller,
+                                            final Request httpRequest) {
     final Method[] methods = controller.getClass().getDeclaredMethods();
     Optional<Method> handlerMethod = Optional.empty();
     final int contrMppngLen = controller.getClass().getAnnotation(RequestMapping.class).value()
@@ -168,7 +169,7 @@ public class HttpRequestHandler implements RequestHandler {
     return methodMapping;
   }
 
-  private boolean isHttpMethodMatch(Request httpRequest, Annotation annotation) {
-    return httpRequest.getMethod().equals(((Mapping)annotation).httpMethod());
+  private boolean isHttpMethodMatch(final Request httpRequest, final Annotation annotation) {
+    return httpRequest.getMethod().equals(((Mapping) annotation).httpMethod());
   }
 }

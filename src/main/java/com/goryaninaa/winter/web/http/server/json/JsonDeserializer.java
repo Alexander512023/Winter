@@ -254,7 +254,7 @@ public class JsonDeserializer implements Deserializer { // NOPMD
   private String[] extractLines(final String jsonString) {
     String processingString = removeExternalSymbols(jsonString);
     processingString = replaceExcessCommas(processingString);
-    String[] jsonLines = splitJsonToLines(processingString);
+    final String[] jsonLines = splitJsonToLines(processingString);
     return returnCommasToLines(jsonLines);
   }
 

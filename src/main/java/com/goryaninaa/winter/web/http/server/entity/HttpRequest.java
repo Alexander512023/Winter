@@ -152,11 +152,11 @@ public class HttpRequest implements Request {
   private Optional<String> cutParametersString() {
     final Pattern pattern = Pattern.compile("\\?\\S+?\\s");
     final Matcher matcher = pattern.matcher(request);
-    Optional<String> cuttedParamString = Optional.empty();
+    Optional<String> cutParamString = Optional.empty();
     if (matcher.find()) {
-      cuttedParamString = Optional.of(request.substring(matcher.start() + 1, matcher.end()).trim());
+      cutParamString = Optional.of(request.substring(matcher.start() + 1, matcher.end()).trim());
     }
-    return cuttedParamString;
+    return cutParamString;
   }
 
   private void defineHeaders() {

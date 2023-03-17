@@ -21,7 +21,7 @@ import java.util.Map.Entry;
  *
  * @author Alex Goryanin
  */
-public class JsonSerializer {
+public class JsonSerializer { // NOPMD
 
   private static final Logger LOG = LoggingMech.getLogger(JsonSerializer.class.getCanonicalName());
   private static final String VAL_FOR_NULL = "null";
@@ -101,15 +101,16 @@ public class JsonSerializer {
     return fieldValue;
   }
 
-  private boolean isDate(Type type) {
-    return type.equals(LocalDate.class) || type.equals(Date.class) || type.equals(LocalDateTime.class);
+  private boolean isDate(final Type type) {
+    return type.equals(LocalDate.class)
+            || type.equals(Date.class) || type.equals(LocalDateTime.class);
   }
 
-  private boolean isWrapper(Type type) {
+  private boolean isWrapper(final Type type) {
     return type.equals(String.class) || type.equals(Integer.class);
   }
 
-  private boolean isPrimitive(Type type) {
+  private boolean isPrimitive(final Type type) {
     return type.equals(int.class) || type.equals(double.class) || type.equals(Boolean.class);
   }
 
