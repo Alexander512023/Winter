@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Properties;
 
@@ -34,6 +35,11 @@ public class FileSystemAccessTest {
     properties.setProperty("LoggingMech.bytesPerFile", "100");
   }
 
+  @After
+  @Before
+  public void deleteLogFile() throws NoSuchFileException {
+    deleteDir(new File("temp"));
+  }
   @Test
   public void fsaShouldWriteMessageToLogFile() throws IOException {
     properties.setProperty(AMOUNT, "1");
@@ -47,7 +53,7 @@ public class FileSystemAccessTest {
   public void fsaShouldCreateLogFileIfThereIsNoOne() {
     properties.setProperty(AMOUNT, "1");
     final FileSystemAccess fsa = new FileSystemAccess(properties);
-    final boolean beforeZero = new File(PATH).list().length == 0;
+    final boolean beforeZero = !(new File(PATH).exists());
     fsa.writeLog(HELLO);
     final boolean afterOne = new File(PATH).list().length == 1;
     assertTrue(beforeZero && afterOne);
@@ -58,7 +64,7 @@ public class FileSystemAccessTest {
           throws InterruptedException {
     properties.setProperty(AMOUNT, "10");
     final FileSystemAccess fsa = new FileSystemAccess(properties);
-    final boolean beforeZero = new File(PATH).list().length == 0;
+    final boolean beforeZero = !(new File(PATH).exists());
     for (int i = 0; i < 27; i++) {
       fsa.writeLog(HELLO + i);
     }
@@ -73,7 +79,7 @@ public class FileSystemAccessTest {
   public void fsaShouldKeepAmountOfLogFilesAccordingToParameter() {
     properties.setProperty(AMOUNT, "2");
     final FileSystemAccess fsa = new FileSystemAccess(properties);
-    final boolean beforeZero = new File(PATH).list().length == 0;
+    final boolean beforeZero = !(new File(PATH).exists());
     for (int i = 0; i < 100; i++) {
       fsa.writeLog(HELLO + i);
     }
@@ -85,14 +91,14 @@ public class FileSystemAccessTest {
    * Test utility.
    *
    */
-  @After
-  @Before
-  public void deleteTestLogFiles() {
-    final String[] logFilesNames = new File(PATH).list();
-    for (final String logFileName : logFilesNames) {
-      //noinspection ResultOfMethodCallIgnored
-      new File(PATH + "/" + logFileName).delete(); // NOPMD
+  private void deleteDir(File file) {
+    File[] contents = file.listFiles();
+    if (contents != null) {
+      for (File f : contents) {
+        deleteDir(f);
+      }
     }
+    file.delete();
   }
 
   private String readMessageFromLogFileOnFs() throws IOException {

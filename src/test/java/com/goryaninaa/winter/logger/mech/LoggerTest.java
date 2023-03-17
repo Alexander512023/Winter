@@ -41,14 +41,7 @@ public class LoggerTest {
   @After
   @Before
   public void deleteLogFile() throws NoSuchFileException {
-    final String[] logFilesNames = new File(PATH).list();
-    if (logFilesNames != null) {
-      for (final String logFileName : logFilesNames) {
-        if (!new File(PATH + "/" + logFileName).delete()) {
-          throw new NoSuchFileException("No such file");
-        }
-      }
-    }
+    deleteDir(new File("temp"));
   }
 
   @Test
@@ -187,6 +180,16 @@ public class LoggerTest {
     log(logger, level);
     Waitility.waitExecution(this, 40);
     LoggingMech.getInstance().stopLogging();
+  }
+
+  private void deleteDir(File file) {
+    File[] contents = file.listFiles();
+    if (contents != null) {
+      for (File f : contents) {
+        deleteDir(f);
+      }
+    }
+    file.delete();
   }
 
   private void log(Logger logger, Level level) {

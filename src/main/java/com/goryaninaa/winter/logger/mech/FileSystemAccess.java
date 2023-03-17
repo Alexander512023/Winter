@@ -19,7 +19,7 @@ import java.util.Properties;
  *
  * @author Alex Goryanin
  */
-public class FileSystemAccess {
+public class FileSystemAccess { // NOPMD
 
   private final File logsDir;
   private final long bytesPerFile;
