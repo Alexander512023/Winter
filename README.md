@@ -1,14 +1,49 @@
-# HttpServer
-This is my educational project. It represents implementation of concurrent HTTP/REST server. It runs as simple application and was written on core Java.
-Project builds via Maven. It's kinda mini-framework, so if you choose it to be your server, you should implement Controller interface and use annotations for request mapping pretty similar to Spring MVC-framework.
-Just look at following example:
-![image](https://user-images.githubusercontent.com/122008693/212290444-8c6d49a5-187f-4ab2-be4b-7a2908d695d7.png)
-# Main goals of this project:
-1. Thread management;
-2. HTTP request handling;
-3. JSON deserialization using regular expressions;
-4. JSON serialization;
-5. Java reflection class and object management;
-6. REST API.
-# Dependencies
-This module has strong dependency on my another educational module - LoggingMech, so you should add that to your local Maven repository if you want to start and check server.
+# Winter Framework
+I maid this project for educational purposes. The main goal was to manage different tecnologies, such as Java concurrencie, REST API, caching, logging, JSON serialization by implementing them as POJO.
+### Basics
+This project works like a framework, so it don't contain any domain logic and should be called by corresponding client code.
+Functionality includes:
+1. HTTP server
+* Multithreaded server that allows processing client requests in synchronous mode
+* Supports REST API and JSON
+* Connects with client code via implementation of com.goryaninaa.winter.web.http.server.Controller interface
+2. Concurrent cache
+* Works between repository and DAO layers
+* Supports automatic cleanup
+* Maintains the size within the given parameter
+3. Concurrent logger
+* Works according to standard Java logging practices which I was able to find in Internet
+* Implements producer-concumer design in order to solve concurrency problems with logwriting from different threads
+
+### Development
+Project is Maven build and dependes on JUnit, whitch provide testing functionality. It consists only from Java code.
+Directory structure is based on Maven quickstart archetype. Packages reflect the basic functionality and are devided into three branches: server, cache, logger.
+All code is covered with unit-tests. In test branch you could find the examples of how framework can be used by client side.
+
+[Javadoc](https://github.com/Alexander512023/Winter/tree/master/doc/javadoc) - see for further details.
+
+Project receives a series of properties via corresponding Properties object, which you should configure on client side(values entered for example):
+
+        Winter.HttpServer.Port=8080 
+        Winter.HttpServer.ThreadsNumber=4
+        Winter.LoggingMech.logsDirPathUrl=/Users/alexandrgoryanin/temp/bank/logs
+        Winter.LoggingMech.bytesPerFile=100000
+        Winter.LoggingMech.amountOfLogs=10
+        Winter.LoggingMech.Level=DEBUG
+        Winter.Cache.size=5
+
+Further I'll present example of main method, which runs the application, based on this Framework:
+
+        public static void main(String[] args) throws IOException {
+                Properties properties = new Properties();
+                properties.load(App.class.getResourceAsStream("/config.properties"));
+                LoggingMech.getInstance().apply(properties);
+                LoggingMech.getInstance().startLogging();
+                ApplicationAssembler applicationAssembler = new ApplicationAssembler(properties); //ApplicationAssembler - assemble your client side application
+                HttpServer httpServer = new HttpServer(properties, applicationAssembler.getControllers());
+                httpServer.start();
+        }}
+The project code was inspected through a series of linters, among which were built-in INTELLIJ IDEA, SonarLint, CodeStyle, PMD.
+
+### Deployment
+Build the project simply by getting source code from github and typing mvn clean install comand. The dependencie on this framework should be among dependencies in your client code POM.
