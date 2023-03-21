@@ -44,7 +44,7 @@ Further I'll present example of main method, which runs the application, based o
                 ApplicationAssembler applicationAssembler = new ApplicationAssembler(properties); //ApplicationAssembler - assemble your client side application
                 HttpServer httpServer = new HttpServer(properties, applicationAssembler.getControllers());
                 httpServer.start();
-        }}
+        }
 The project code was inspected with a series of linters, among which were built-in INTELLIJ IDEA, 
 SonarLint, CodeStyle, PMD.
 
