@@ -6,7 +6,8 @@ Functionality includes:
 1. HTTP server
 * Multithreaded server that allows processing client requests in synchronous mode
 * Supports REST API and JSON
-* Connects with client code via implementation of com.goryaninaa.winter.web.http.server.Controller interface
+* Connects to client code via implementation of com.goryaninaa.winter.web.http.server.Controller 
+  interface
 2. Concurrent cache
 * Works between repository and DAO layers
 * Supports automatic cleanup
