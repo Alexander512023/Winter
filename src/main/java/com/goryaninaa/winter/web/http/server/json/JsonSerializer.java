@@ -28,11 +28,13 @@ public class JsonSerializer { // NOPMD
 
   /**
    * Receives generic object and transform it to String of JSON format.
+   *
+   * @param responseObject - object that will be serialized to JSON
+   * @param <T> - actual object type
+   * @return - JSON representation of passed object
    */
   public <T> String serialize(final T responseObject) {
-    String body;
-    body = getStringRepresentation(responseObject);
-    return body;
+    return getStringRepresentation(responseObject);
   }
 
   private <T> String getStringRepresentation(final T object) {

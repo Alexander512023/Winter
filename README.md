@@ -20,7 +20,7 @@ Project is Maven build and dependes on JUnit, whitch provide testing functionali
 Directory structure is based on Maven quickstart archetype. Packages reflect the basic functionality and are devided into three branches: server, cache, logger.
 All code is covered with unit-tests. In test branch you could find the examples of how framework can be used by client side.
 
-[Javadoc](https://github.com/Alexander512023/Winter/tree/master/doc/javadoc) - see for further details.
+[Javadoc](https://alexander512023.github.io/WinterJavadoc/) - see for further details.
 
 Project receives a series of properties via corresponding Properties object, which you should configure on client side(values entered for example):
 

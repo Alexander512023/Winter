@@ -28,6 +28,7 @@ public class Storage<V> implements Cache<V> {
    * Constructor.
    *
    * @param dao - DAO of cached entity
+   * @param cacheStorageMap - Map where cached values will be stored
    */
   public Storage(final DataMediator<V> dao,
                  final Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorageMap) {
