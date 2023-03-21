@@ -14,7 +14,7 @@ public class GenericSynchronizer<V> implements Synchronizer<V> {
 
     @Override
     public Object getLock(final V object) {
-        int index = object.hashCode() & AMOUNT;
+        int index = object.hashCode() & (AMOUNT - 1);
         return locks.get(index);
     }
 

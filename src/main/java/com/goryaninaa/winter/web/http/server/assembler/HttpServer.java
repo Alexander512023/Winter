@@ -1,4 +1,4 @@
-package com.goryaninaa.winter.web.http.server.constructor;
+package com.goryaninaa.winter.web.http.server.assembler;
 
 import com.goryaninaa.winter.web.http.server.Controller;
 import com.goryaninaa.winter.web.http.server.RequestHandler;
@@ -40,8 +40,9 @@ public class HttpServer {
     for (final Controller controller : controllers) {
       requestHandler.addController(controller);
     }
-    final int port = Integer.parseInt(properties.getProperty("HttpServer.Port"));
-    final int threadsNumber = Integer.parseInt(properties.getProperty("HttpServer.ThreadsNumber"));
+    final int port = Integer.parseInt(properties.getProperty("Winter.HttpServer.Port"));
+    final int threadsNumber = Integer.parseInt(properties.getProperty("Winter.HttpServer" +
+            ".ThreadsNumber"));
     this.server = new Server(port, threadsNumber, requestHandler);
   }
 

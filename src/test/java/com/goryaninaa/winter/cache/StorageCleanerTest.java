@@ -26,7 +26,7 @@ class StorageCleanerTest {
     @BeforeAll
     static void init() {
         Properties properties = new Properties();
-        properties.put("Cache.size", "3");
+        properties.put("Winter.Cache.size", "3");
         final String SCENARIO = "11123";
         cacheStorage1 = new ConcurrentHashMap<>();
         storageCleaner1 = new StorageCleaner<>(cacheStorage1, properties);

@@ -54,7 +54,7 @@ public final class LoggingMech {
   public void apply(final Properties properties) {
     synchronized (this) {
       this.fsa = new FileSystemAccess(properties);
-      setLevel(properties.getProperty("LoggingMech.Level"));
+      setLevel(properties.getProperty("Winter.LoggingMech.Level"));
     }
   }
 

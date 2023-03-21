@@ -3,13 +3,11 @@ package com.goryaninaa.winter.logger.mech;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Properties;
 
@@ -25,19 +23,19 @@ import static org.junit.Assert.assertTrue;
 public class FileSystemAccessTest {
 
   private static final String PATH = "temp/test/logs";
-  private static final String AMOUNT = "LoggingMech.amountOfLogs";
+  private static final String AMOUNT = "Winter.LoggingMech.amountOfLogs";
   private static final String HELLO = "Hello";
   private final Properties properties = new Properties();
 
   @Before
   public void initProperties() {
-    properties.setProperty("LoggingMech.logsDirPathUrl", PATH);
-    properties.setProperty("LoggingMech.bytesPerFile", "100");
+    properties.setProperty("Winter.LoggingMech.logsDirPathUrl", PATH);
+    properties.setProperty("Winter.LoggingMech.bytesPerFile", "100");
   }
 
   @After
   @Before
-  public void deleteLogFile() throws NoSuchFileException {
+  public void deleteLogFile() throws IOException {
     deleteDir(new File("temp"));
   }
   @Test
@@ -91,14 +89,16 @@ public class FileSystemAccessTest {
    * Test utility.
    *
    */
-  private void deleteDir(File file) {
+  private void deleteDir(File file) throws IOException {
     File[] contents = file.listFiles();
     if (contents != null) {
       for (File f : contents) {
         deleteDir(f);
       }
     }
-    file.delete();
+    if (!file.delete()) {
+      throw new IOException("File deletion failed");
+    }
   }
 
   private String readMessageFromLogFileOnFs() throws IOException {

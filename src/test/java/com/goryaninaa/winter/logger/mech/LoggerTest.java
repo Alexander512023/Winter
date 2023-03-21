@@ -32,15 +32,15 @@ public class LoggerTest {
    */
   @Before
   public void initProperties() {
-    properties.setProperty("LoggingMech.logsDirPathUrl", PATH);
-    properties.setProperty("LoggingMech.bytesPerFile", "10000");
-    properties.setProperty("LoggingMech.amountOfLogs", "1");
-    properties.setProperty("LoggingMech.Level", "DEBUG");
+    properties.setProperty("Winter.LoggingMech.logsDirPathUrl", PATH);
+    properties.setProperty("Winter.LoggingMech.bytesPerFile", "10000");
+    properties.setProperty("Winter.LoggingMech.amountOfLogs", "1");
+    properties.setProperty("Winter.LoggingMech.Level", "DEBUG");
   }
 
   @After
   @Before
-  public void deleteLogFile() throws NoSuchFileException {
+  public void deleteLogFile() throws IOException {
     deleteDir(new File("temp"));
   }
 
@@ -182,14 +182,16 @@ public class LoggerTest {
     LoggingMech.getInstance().stopLogging();
   }
 
-  private void deleteDir(File file) {
+  private void deleteDir(File file) throws IOException {
     File[] contents = file.listFiles();
     if (contents != null) {
       for (File f : contents) {
         deleteDir(f);
       }
     }
-    file.delete();
+    if (!file.delete()) {
+      throw new IOException("File deletion failed");
+    }
   }
 
   private void log(Logger logger, Level level) {

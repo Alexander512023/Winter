@@ -26,9 +26,9 @@ public class FileSystemAccess { // NOPMD
   private final int amountOfLogs;
 
   protected FileSystemAccess(final Properties properties) {
-    this.logsDir = new File(properties.getProperty("LoggingMech.logsDirPathUrl"));
-    this.bytesPerFile = Long.parseLong(properties.getProperty("LoggingMech.bytesPerFile"));
-    this.amountOfLogs = Integer.parseInt(properties.getProperty("LoggingMech.amountOfLogs"));
+    this.logsDir = new File(properties.getProperty("Winter.LoggingMech.logsDirPathUrl"));
+    this.bytesPerFile = Long.parseLong(properties.getProperty("Winter.LoggingMech.bytesPerFile"));
+    this.amountOfLogs = Integer.parseInt(properties.getProperty("Winter.LoggingMech.amountOfLogs"));
   }
 
   protected void writeLog(final String logRecord) {

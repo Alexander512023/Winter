@@ -34,7 +34,7 @@ public class StorageCleaner<V> {
   public StorageCleaner(final Map<CacheKey, Map<CacheKey, Future<Optional<V>>>> cacheStorage,
           final Properties properties) {
     this.cacheStorage = cacheStorage;
-    this.sizeParam = Integer.parseInt(properties.getProperty("Cache.size"));
+    this.sizeParam = Integer.parseInt(properties.getProperty("Winter.Cache.size"));
     this.executorService = Executors.newSingleThreadExecutor();
     this.running = new AtomicBoolean(false);
   }
