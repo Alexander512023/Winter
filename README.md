@@ -20,7 +20,8 @@ Project is Maven build and dependes on JUnit, whitch provide testing functionali
 Directory structure is based on Maven quickstart archetype. Packages reflect the basic functionality and are devided into three branches: server, cache, logger.
 All code is covered with unit-tests. In test branch you could find the examples of how framework can be used by client side.
 
-[Javadoc](https://alexander512023.github.io/WinterJavadoc/) - see for further details.
+[Javadoc](https://alexander512023.github.io/WinterJavadoc/) - review for further details about 
+main packages, classes and interfaces.
 
 Project receives a series of properties via corresponding Properties object, which you should configure on client side(values entered for example):
 
@@ -43,7 +44,8 @@ Further I'll present example of main method, which runs the application, based o
                 HttpServer httpServer = new HttpServer(properties, applicationAssembler.getControllers());
                 httpServer.start();
         }}
-The project code was inspected through a series of linters, among which were built-in INTELLIJ IDEA, SonarLint, CodeStyle, PMD.
+The project code was inspected with a series of linters, among which were built-in INTELLIJ IDEA, 
+SonarLint, CodeStyle, PMD.
 
 ### Deployment
 Build the project simply by getting source code from github and typing mvn clean install comand. The dependencie on this framework should be among dependencies in your client code POM.
