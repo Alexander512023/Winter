@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StorageTest {
 
-    private static CacheKeyFactory cacheKeyFactory;
+    private static CacheKeyFactoryStandard cacheKeyFactory;
     private static PersonDaoStub personDaoStub1;
     private static Cache<PersonC> personCache1;
     private static PersonDataMediatorStub personDataMediatorStub1;

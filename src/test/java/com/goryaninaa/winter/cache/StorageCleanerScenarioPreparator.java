@@ -26,7 +26,7 @@ public class StorageCleanerScenarioPreparator {
     }
 
     private void applyScenario(String scenarioInput) {
-        CacheKeyFactory keyFactory = StorageTestEnvGenerator.personIdCacheKeyFactory;
+        CacheKeyFactoryStandard keyFactory = StorageTestEnvGenerator.personIdCacheKeyFactory;
         CacheKey person1CacheKey = keyFactory.generateCacheKey(1, PersonAccessStrategyType.ID);
         CacheKey person2CacheKey = keyFactory.generateCacheKey(2, PersonAccessStrategyType.ID);
         CacheKey person3CacheKey = keyFactory.generateCacheKey(3, PersonAccessStrategyType.ID);
@@ -61,7 +61,7 @@ public class StorageCleanerScenarioPreparator {
                 executorService.submit(() -> Optional.of(new PersonC(4)));
         Future<Optional<PersonC>> futurePerson5 =
                 executorService.submit(() -> Optional.of(new PersonC(5)));
-        CacheKeyFactory cacheKeyFactory = StorageTestEnvGenerator.personIdCacheKeyFactory;
+        CacheKeyFactoryStandard cacheKeyFactory = StorageTestEnvGenerator.personIdCacheKeyFactory;
         CacheKey person1CacheKey = cacheKeyFactory.generateCacheKey(1, PersonAccessStrategyType.ID);
         CacheKey person2CacheKey = cacheKeyFactory.generateCacheKey(2, PersonAccessStrategyType.ID);
         CacheKey person3CacheKey = cacheKeyFactory.generateCacheKey(3, PersonAccessStrategyType.ID);

@@ -1,7 +1,7 @@
 package com.goryaninaa.winter.web.http.server;
 
+import com.goryaninaa.winter.Waitility;
 import com.goryaninaa.winter.web.http.server.entity.HttpResponse;
-import com.goryaninaa.winter.web.http.server.exception.ServerException;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -12,18 +12,21 @@ import java.util.concurrent.CountDownLatch;
 public class RequestHandlerStub implements RequestHandler {
 
   private final CountDownLatch countDownLatch;
+  private final int delay;
 
-  public RequestHandlerStub(final CountDownLatch countDownLatch) {
+  public RequestHandlerStub(final CountDownLatch countDownLatch, final int delay) {
     this.countDownLatch = countDownLatch;
+    this.delay = delay;
   }
 
   @Override
   public HttpResponse handle(final String request) {
-    countDownLatch.countDown();
     try {
+      countDownLatch.countDown();
+      Waitility.waitExecution(this, delay);
       countDownLatch.await();
     } catch (InterruptedException e) {
-      throw new ServerException("Interrupted while waiting another threads");
+      return new HttpResponse(HttpResponseCode.OK, request);
     }
     return new HttpResponse(HttpResponseCode.OK, request);
   }

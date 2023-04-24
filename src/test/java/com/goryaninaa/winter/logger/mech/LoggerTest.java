@@ -40,7 +40,7 @@ public class LoggerTest {
 
   @After
   @Before
-  public void deleteLogFile() throws IOException {
+  public void deleteLogFile() {
     deleteDir(new File("temp"));
   }
 
@@ -133,7 +133,7 @@ public class LoggerTest {
   }
 
   private boolean defineState(Level verifiable, Level setted) {
-    properties.setProperty("LoggingMech.Level", setted.toString());
+    properties.setProperty("Winter.LoggingMech.Level", setted.toString());
     LoggingMech.getInstance().apply(properties);
     return check(verifiable);
   }
@@ -182,16 +182,15 @@ public class LoggerTest {
     LoggingMech.getInstance().stopLogging();
   }
 
-  private void deleteDir(File file) throws IOException {
+  private void deleteDir(File file) {
     File[] contents = file.listFiles();
     if (contents != null) {
       for (File f : contents) {
         deleteDir(f);
       }
     }
-    if (!file.delete()) {
-      throw new IOException("File deletion failed");
-    }
+    //noinspection ResultOfMethodCallIgnored
+    file.delete();
   }
 
   private void log(Logger logger, Level level) {

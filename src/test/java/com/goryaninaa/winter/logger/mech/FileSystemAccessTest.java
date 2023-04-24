@@ -35,7 +35,7 @@ public class FileSystemAccessTest {
 
   @After
   @Before
-  public void deleteLogFile() throws IOException {
+  public void deleteLogFile() {
     deleteDir(new File("temp"));
   }
   @Test
@@ -89,16 +89,15 @@ public class FileSystemAccessTest {
    * Test utility.
    *
    */
-  private void deleteDir(File file) throws IOException {
+  private void deleteDir(File file) {
     File[] contents = file.listFiles();
     if (contents != null) {
       for (File f : contents) {
         deleteDir(f);
       }
     }
-    if (!file.delete()) {
-      throw new IOException("File deletion failed");
-    }
+    //noinspection ResultOfMethodCallIgnored
+    file.delete();
   }
 
   private String readMessageFromLogFileOnFs() throws IOException {

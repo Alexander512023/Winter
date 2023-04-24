@@ -12,8 +12,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
+import java.util.Properties;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,26 +30,31 @@ import java.util.regex.Pattern;
 public class Server {
   private final AtomicBoolean started;
   private final ServerSocket serverSocket;
-  private final ExecutorService executor;
+  private final ScheduledExecutorService executor;
   private final RequestHandler requestHandler;
-  private static final Logger LOG = LoggingMech
-      .getLogger(Server.class.getCanonicalName());
+  private final int delay;
+  private static final Logger LOG = LoggingMech.getLogger(Server.class.getCanonicalName());
   private static final int TC_TIME_OUT = 50;
 
   /**
    * Constructor that receive parameters: port, number of handler threads and
    * implementation of request handler.
    *
-   * @param port           - port number of server socket
-   * @param threadsNumber  - number of threads that will handle client connections
+   * @param properties     - properties for server are: "port" number of server socket, "number of
+   *                       threads" that will handle client connections, "delay" - time delay before
+   *                       session will be timed out
    * @param requestHandler - implementation of request handler
    * @throws IOException if creation of server socket failed
    */
-  public Server(final int port, final int threadsNumber, final RequestHandler requestHandler)
+  public Server(Properties properties, final RequestHandler requestHandler)
       throws IOException {
-    this.requestHandler = requestHandler;
-    this.executor = Executors.newFixedThreadPool(threadsNumber);
+    final int port = Integer.parseInt(properties.getProperty("Winter.HttpServer.Port"));
+    final int threadsNumber = Integer.parseInt(properties.getProperty("Winter.HttpServer" +
+            ".ThreadsNumber"));
+    delay = Integer.parseInt(properties.getProperty("Winter.HttpServer.Delay"));
+    this.executor = Executors.newScheduledThreadPool(threadsNumber);
     this.serverSocket = new ServerSocket(port);
+    this.requestHandler = requestHandler;
     started = new AtomicBoolean(true);
   }
 
@@ -57,8 +65,7 @@ public class Server {
   public void start() {
     try {
       while (started.get()) {
-        final Socket clientSocket = serverSocket.accept(); // NOPMD
-        executor.submit(() -> run(clientSocket));
+        runScheduledHandlerTask();
       }
     } catch (IOException e) {
       if (LOG.isErrorEnabled()) {
@@ -92,6 +99,13 @@ public class Server {
         LOG.info("Server threads completed correctly");
       }
     }
+  }
+
+  private void runScheduledHandlerTask() throws IOException {
+    final Socket clientSocket = serverSocket.accept(); // NOPMD
+    Future<?> handlerTask = executor.submit(() -> run(clientSocket));
+    Runnable cancelTask = () -> handlerTask.cancel(true);
+    executor.schedule(cancelTask, delay, TimeUnit.MILLISECONDS);
   }
 
   private void run(final Socket socket) {

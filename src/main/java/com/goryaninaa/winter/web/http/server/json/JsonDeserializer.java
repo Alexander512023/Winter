@@ -159,7 +159,7 @@ public class JsonDeserializer implements Deserializer { // NOPMD
         return method;
       }
     }
-    throw new IllegalArgumentException("There is no such set method");
+    throw new IllegalArgumentException("There is no such set method: " + methodName);
   }
 
   private Map<String, String> splitJsonLinesToStringMap(final String... jsonLines) {

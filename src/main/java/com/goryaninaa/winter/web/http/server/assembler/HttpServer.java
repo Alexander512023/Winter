@@ -40,10 +40,7 @@ public class HttpServer {
     for (final Controller controller : controllers) {
       requestHandler.addController(controller);
     }
-    final int port = Integer.parseInt(properties.getProperty("Winter.HttpServer.Port"));
-    final int threadsNumber = Integer.parseInt(properties.getProperty("Winter.HttpServer" +
-            ".ThreadsNumber"));
-    this.server = new Server(port, threadsNumber, requestHandler);
+    this.server = new Server(properties, requestHandler);
   }
 
   public void start() {

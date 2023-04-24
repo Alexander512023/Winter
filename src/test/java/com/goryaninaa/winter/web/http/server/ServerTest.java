@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -18,6 +19,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -29,23 +31,31 @@ class ServerTest {
   private ClientStub client1;
   private ClientStub client2;
   private ClientStub client3;
+  private ClientStub client4;
+  private Properties properties;
 
   @BeforeEach
   public void init() {
     this.client1 = new ClientStub(8000);
     this.client2 = new ClientStub(8000);
     this.client3 = new ClientStub(8001);
+    this.client4 = new ClientStub(8002);
+    properties = new Properties();
+    properties.setProperty("Winter.HttpServer.ThreadsNumber", "4");
+    properties.setProperty("Winter.HttpServer.Delay", "500");
   }
 
   @Test
-  void serverShouldCorrectlyHandleFourClientSimultaneously() // NOPMD
-          throws InterruptedException, IOException, ExecutionException {
+  void serverShouldCorrectlyHandleTwoClientSimultaneously() // NOPMD
+          throws InterruptedException, IOException {
     ExecutorService executor = Executors.newFixedThreadPool(2);
     CountDownLatch countDownLatch = new CountDownLatch(2);
-    RequestHandlerStub requestHandler = new RequestHandlerStub(countDownLatch);
-    final Server server = new Server(8000, 2, requestHandler);
+    RequestHandlerStub requestHandler = new RequestHandlerStub(countDownLatch, 0);
+    properties.remove("Winter.HttpServer.Port");
+    properties.setProperty("Winter.HttpServer.Port", "8000");
+    final Server server = new Server(properties, requestHandler);
     new Thread(server::start).start();
-    runTestScenario(executor, countDownLatch);
+    runTestScenario1(executor, countDownLatch);
     server.shutdown();
     assertAll("Server working",
         () -> assertEquals(0, countDownLatch.getCount(), "Tasks worked in series"),
@@ -60,10 +70,12 @@ class ServerTest {
   void serverShouldShutdownCorrectly() throws InterruptedException, IOException {
     ExecutorService executor = Executors.newSingleThreadExecutor();
     CountDownLatch countDownLatch = new CountDownLatch(2);
-    RequestHandlerStub requestHandler = new RequestHandlerStub(countDownLatch);
-    final Server server = new Server(8001, 4, requestHandler);
+    RequestHandlerStub requestHandler = new RequestHandlerStub(countDownLatch, 0);
+    properties.remove("Winter.HttpServer.Port");
+    properties.setProperty("Winter.HttpServer.Port", "8001");
+    final Server server = new Server(properties, requestHandler);
     new Thread(server::start).start();
-    final Future<?> future = runTestScenario(executor);
+    final Future<?> future = runTestScenario2(executor);
     server.shutdown();
     try {
       future.get(100, TimeUnit.MILLISECONDS);
@@ -78,16 +90,21 @@ class ServerTest {
     }
   }
 
-  private Future<?> runTestScenario(ExecutorService executor) throws InterruptedException {
-    final Future<?> future = executor.submit(() -> client3.go("test"));
-    executor.shutdown();
-    if (executor.awaitTermination(120, TimeUnit.MILLISECONDS)) {
-      fail("Do not await long enough");
-    }
-    synchronized (this) {
-      wait(10);
-    }
-    return future;
+  @Test
+  void ServerShouldScheduleTimeOutCorrectly() throws IOException {
+    CountDownLatch countDownLatch = new CountDownLatch(3);
+    RequestHandlerStub requestHandler = new RequestHandlerStub(countDownLatch, 3000);
+    properties.remove("Winter.HttpServer.Port");
+    properties.setProperty("Winter.HttpServer.Port", "8002");
+    final Server server = new Server(properties, requestHandler);
+    Executors.newSingleThreadExecutor().submit(server::start);
+    final long before = System.currentTimeMillis();
+    runTestScenario3();
+    final long after = System.currentTimeMillis();
+    server.shutdown();
+    final boolean testPass = (after - before) < 750
+            && getRespSubstr(client4).equals("fourth request");
+    assertTrue(testPass);
   }
 
   private String checkSocket() throws IOException {
@@ -111,14 +128,27 @@ class ServerTest {
     return client.getResponse().substring(matcher.end());
   }
 
-  private void runTestScenario(ExecutorService executor, CountDownLatch countDownLatch)
-          throws InterruptedException, ExecutionException {
-    final Future<?> future1 = executor.submit(() -> client1.go("first request"));
-    final Future<?> future2 = executor.submit(() -> client2.go("second request"));
+  private void runTestScenario1(ExecutorService executor, CountDownLatch countDownLatch)
+          throws InterruptedException {
+    executor.execute(() -> client1.go("first request"));
+    executor.execute(() -> client2.go("second request"));
     executor.shutdown();
-    future1.get();
-    future2.get();
     countDownLatch.await();
   }
 
+  private Future<?> runTestScenario2(ExecutorService executor) throws InterruptedException {
+    final Future<?> future = executor.submit(() -> client3.go("test"));
+    executor.shutdown();
+    if (executor.awaitTermination(120, TimeUnit.MILLISECONDS)) {
+      fail("Do not await long enough");
+    }
+    synchronized (this) {
+      wait(10);
+    }
+    return future;
+  }
+
+  private void runTestScenario3() {
+    client4.go("fourth request");
+  }
 }

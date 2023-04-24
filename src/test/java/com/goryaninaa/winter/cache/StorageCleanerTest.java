@@ -70,7 +70,7 @@ class StorageCleanerTest {
     }
 
     private boolean isConfirmed(Map<CacheKey, Map<CacheKey, Future<Optional<PersonC>>>> cacheStorage) {
-        CacheKeyFactory keyFactory = StorageTestEnvGenerator.personIdCacheKeyFactory;
+        CacheKeyFactoryStandard keyFactory = StorageTestEnvGenerator.personIdCacheKeyFactory;
         CacheKey person4CacheKey = keyFactory.generateCacheKey(4, PersonAccessStrategyType.ID);
         CacheKey person5CacheKey = keyFactory.generateCacheKey(5, PersonAccessStrategyType.ID);
         return  cacheStorage.containsKey(person4CacheKey) && cacheStorage.containsKey(person5CacheKey);

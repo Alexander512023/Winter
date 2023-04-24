@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 
 public class StorageTestEnvGenerator {
 
-    protected static final CacheKeyFactory personIdCacheKeyFactory = generatePersonIdCacheKeyFactory();
+    protected static final CacheKeyFactoryStandard personIdCacheKeyFactory = generatePersonIdCacheKeyFactory();
     private final PersonDataMediatorStub personDataMediatorStub;
     private final PersonDaoStub personDaoStub = new PersonDaoStub();
     private final Cache<PersonC> personCache;
@@ -46,11 +46,11 @@ public class StorageTestEnvGenerator {
         return new PersonDataMediatorStub(personDataAccessStrategies);
     }
 
-    private static CacheKeyFactory generatePersonIdCacheKeyFactory() {
+    private static CacheKeyFactoryStandard generatePersonIdCacheKeyFactory() {
         KeyExtractStrategy personIdExtractStrategy = new PersonIdExtractStrategy();
         Map<String, KeyExtractStrategy> personIdExtractStrategies =
                 new ConcurrentHashMap<>(
                         Map.of(personIdExtractStrategy.getStrategyType(), personIdExtractStrategy));
-        return new CacheKeyFactory(personIdExtractStrategies);
+        return new CacheKeyFactoryStandard(personIdExtractStrategies);
     }
 }
