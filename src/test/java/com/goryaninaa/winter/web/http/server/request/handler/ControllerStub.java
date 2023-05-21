@@ -1,6 +1,5 @@
 package com.goryaninaa.winter.web.http.server.request.handler;
 
-import com.goryaninaa.winter.web.http.server.Controller;
 import com.goryaninaa.winter.web.http.server.HttpResponseCode;
 import com.goryaninaa.winter.web.http.server.Request;
 import com.goryaninaa.winter.web.http.server.Response;

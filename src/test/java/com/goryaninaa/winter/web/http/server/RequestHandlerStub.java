@@ -30,10 +30,4 @@ public class RequestHandlerStub implements RequestHandler {
     }
     return new HttpResponse(HttpResponseCode.OK, request);
   }
-
-  @Override
-  public void addController(final Controller controller) {
-
-  }
-
 }

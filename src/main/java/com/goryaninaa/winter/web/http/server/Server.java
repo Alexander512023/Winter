@@ -18,8 +18,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Server class is responsible for acceptance of client connections and
@@ -28,13 +26,13 @@ import java.util.regex.Pattern;
  * @author Alex Goryanin
  */
 public class Server {
-  private final AtomicBoolean started;
+  private final AtomicBoolean started = new AtomicBoolean(false);
   private final ServerSocket serverSocket;
   private final ScheduledExecutorService executor;
   private final RequestHandler requestHandler;
+  private final RequestReader requestReader;
   private final int delay;
   private static final Logger LOG = LoggingMech.getLogger(Server.class.getCanonicalName());
-  private static final int TC_TIME_OUT = 50;
 
   /**
    * Constructor that receive parameters: port, number of handler threads and
@@ -46,7 +44,8 @@ public class Server {
    * @param requestHandler - implementation of request handler
    * @throws IOException if creation of server socket failed
    */
-  public Server(Properties properties, final RequestHandler requestHandler)
+  public Server(Properties properties, final RequestHandler requestHandler,
+                final RequestReader requestReader)
       throws IOException {
     final int port = Integer.parseInt(properties.getProperty("Winter.HttpServer.Port"));
     final int threadsNumber = Integer.parseInt(properties.getProperty("Winter.HttpServer" +
@@ -55,7 +54,7 @@ public class Server {
     this.executor = Executors.newScheduledThreadPool(threadsNumber);
     this.serverSocket = new ServerSocket(port);
     this.requestHandler = requestHandler;
-    started = new AtomicBoolean(true);
+    this.requestReader = requestReader;
   }
 
   /**
@@ -63,6 +62,7 @@ public class Server {
    * requests to handler.
    */
   public void start() {
+    started.set(true);
     try {
       while (started.get()) {
         runScheduledHandlerTask();
@@ -82,22 +82,10 @@ public class Server {
   public void shutdown() {
     started.set(false); // NOPMD
     if (!serverSocket.isClosed()) {
-      try {
-        serverSocket.close();
-        if (LOG.isInfoEnabled()) {
-          LOG.info("Server shut down correctly");
-        }
-      } catch (IOException e) {
-        if (LOG.isErrorEnabled()) {
-          LOG.error(StackTraceString.get(e));
-        }
-      }
+      closeServerSocket();
     }
     if (!executor.isShutdown()) {
-      executor.shutdownNow();
-      if (LOG.isInfoEnabled()) {
-        LOG.info("Server threads completed correctly");
-      }
+      shutdownExecutor();
     }
   }
 
@@ -116,16 +104,7 @@ public class Server {
         BufferedReader input = new BufferedReader(
             new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         PrintWriter output = new PrintWriter(socket.getOutputStream())) {
-      final Optional<String> request = getRequest(input);
-      if (request.isPresent()) {
-        final String requestString = request.get();
-        final Response response = requestHandler.handle(requestString);
-        sendResponse(response, output);
-        if (LOG.isInfoEnabled()) {
-          LOG.info("Response with code " + response.getCode().getCode() + " was sent");
-        }
-      }
-      socket.close();
+      handleRequest(socket, input, output);
     } catch (IOException e) {
       if (LOG.isErrorEnabled()) {
         LOG.error("Error on handling request/n" + StackTraceString.get(e));
@@ -133,69 +112,42 @@ public class Server {
     }
   }
 
-  private Optional<String> getRequest(final BufferedReader input) throws IOException {
-    final long before = System.currentTimeMillis();
-    boolean isTechConn = false;
-    while (!input.ready()) {
-      final long after = System.currentTimeMillis();
-      if (after - before > TC_TIME_OUT) {
-        if (LOG.isDebugEnabled()) {
-          LOG.debug("Technical connection handled");
-        }
-        isTechConn = true;
-        break;
-      }
-    }
-    return isTechConn ? Optional.empty() : readRequest(input);
-  }
-
-  private Optional<String> readRequest(final BufferedReader input) throws IOException {
-    final String requestString = getRequestString(input);
-    if (LOG.isDebugEnabled()) {
-      LOG.debug(requestString);
-    }
-    return Optional.of(requestString);
-  }
-
-  private String getRequestString(final BufferedReader input) throws IOException {
-    final Pattern patternBodyLength = Pattern.compile("Content-Length");
-    final Pattern patternHeadersEnd = Pattern.compile("^$");
-    return getRequestString(input, patternBodyLength, patternHeadersEnd);
-  }
-
-  private String getRequestString(
-          final BufferedReader input, final Pattern patternBodyLength,
-          final Pattern patternHeadersEnd)
+  private void handleRequest(Socket socket, BufferedReader input, PrintWriter output)
           throws IOException {
-    final StringBuilder requestString = new StringBuilder();
-    int contentLength = 0;
-    while (input.ready()) {
-      final String currentLine = input.readLine();
-      requestString.append(currentLine).append('\n');
-      final Matcher matcherBodyLength = patternBodyLength.matcher(currentLine);
-      final Matcher matcherHeadersEnd = patternHeadersEnd.matcher(currentLine);
-      if (matcherBodyLength.find()) {
-        contentLength = Integer.parseInt(currentLine.split(":")[1].trim());
-      }
-      if (matcherHeadersEnd.find()) {
-        requestString.append(requestBodyToString(input, contentLength));
+    final Optional<String> request = requestReader.getRequest(input);
+    if (request.isPresent()) {
+      final String requestString = request.get();
+      final Response response = requestHandler.handle(requestString);
+      sendResponse(response, output);
+      if (LOG.isInfoEnabled()) {
+        LOG.info("Response with code " + response.getCode().getCode() + " was sent");
       }
     }
-    return requestString.toString();
-  }
-
-  private String requestBodyToString(final BufferedReader input, final int contentLength)
-          throws IOException {
-    final StringBuilder result = new StringBuilder();
-    for (int i = 0; i < contentLength; i++) {
-      final char value = (char) input.read();
-      result.append(value);
-    }
-    return result.toString();
+    socket.close();
   }
 
   private void sendResponse(final Response response, final PrintWriter output) {
     output.println(response.getResponseString());
     output.flush();
+  }
+
+  private void shutdownExecutor() {
+    executor.shutdownNow();
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Server threads completed correctly");
+    }
+  }
+
+  private void closeServerSocket() {
+    try {
+      serverSocket.close();
+      if (LOG.isInfoEnabled()) {
+        LOG.info("Server shut down correctly");
+      }
+    } catch (IOException e) {
+      if (LOG.isErrorEnabled()) {
+        LOG.error(StackTraceString.get(e));
+      }
+    }
   }
 }

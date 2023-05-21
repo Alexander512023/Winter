@@ -1,4 +1,4 @@
-package com.goryaninaa.winter.web.http.server;
+package com.goryaninaa.winter.web.http.server.request.handler;
 
 /**
  * This interface should be implemented on the client code side. Implementation

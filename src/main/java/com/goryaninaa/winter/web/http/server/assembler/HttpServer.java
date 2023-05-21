@@ -1,13 +1,19 @@
 package com.goryaninaa.winter.web.http.server.assembler;
 
-import com.goryaninaa.winter.web.http.server.Controller;
+import com.goryaninaa.winter.web.http.server.request.reader.BasicRequestReader;
+import com.goryaninaa.winter.web.http.server.RequestReader;
+import com.goryaninaa.winter.web.http.server.request.handler.Controller;
 import com.goryaninaa.winter.web.http.server.RequestHandler;
 import com.goryaninaa.winter.web.http.server.Server;
 import com.goryaninaa.winter.web.http.server.entity.IncomingRequest;
 import com.goryaninaa.winter.web.http.server.entity.OutgoingResponse;
 import com.goryaninaa.winter.web.http.server.json.JsonDeserializer;
+import com.goryaninaa.winter.web.http.server.request.handler.ControllerKeeper;
+import com.goryaninaa.winter.web.http.server.request.handler.controller.BasicControllerKeeper;
+import com.goryaninaa.winter.web.http.server.request.handler.manager.BasicManager;
 import com.goryaninaa.winter.web.http.server.request.handler.Deserializer;
 import com.goryaninaa.winter.web.http.server.request.handler.HttpRequestHandler;
+import com.goryaninaa.winter.web.http.server.request.handler.Manager;
 import com.goryaninaa.winter.web.http.server.request.handler.RequestPreparator;
 import com.goryaninaa.winter.web.http.server.request.handler.ResponsePreparator;
 import java.io.IOException;
@@ -36,11 +42,15 @@ public class HttpServer {
     final RequestPreparator inc = new IncomingRequest();
     final ResponsePreparator out = new OutgoingResponse();
     final Deserializer deserializer = new JsonDeserializer();
-    final RequestHandler requestHandler = new HttpRequestHandler(inc, out, deserializer);
+    final Manager manager = new BasicManager(deserializer);
+    final ControllerKeeper controllerKeeper = new BasicControllerKeeper();
+    final RequestHandler requestHandler = new HttpRequestHandler(inc, out, manager,
+            controllerKeeper);
     for (final Controller controller : controllers) {
-      requestHandler.addController(controller);
+      controllerKeeper.addController(controller);
     }
-    this.server = new Server(properties, requestHandler);
+    final RequestReader requestReader = new BasicRequestReader();
+    this.server = new Server(properties, requestHandler, requestReader);
   }
 
   public void start() {

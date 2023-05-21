@@ -8,6 +8,7 @@ public class GenericSynchronizer<V> implements Synchronizer<V> {
     private final List<Object> locks;
     private static final int AMOUNT = 1000;
 
+
     public GenericSynchronizer() {
         locks = defineLocks();
     }

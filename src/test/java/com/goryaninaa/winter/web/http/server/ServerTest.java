@@ -49,11 +49,12 @@ class ServerTest {
   void serverShouldCorrectlyHandleTwoClientSimultaneously() // NOPMD
           throws InterruptedException, IOException {
     ExecutorService executor = Executors.newFixedThreadPool(2);
-    CountDownLatch countDownLatch = new CountDownLatch(2);
-    RequestHandlerStub requestHandler = new RequestHandlerStub(countDownLatch, 0);
     properties.remove("Winter.HttpServer.Port");
     properties.setProperty("Winter.HttpServer.Port", "8000");
-    final Server server = new Server(properties, requestHandler);
+    CountDownLatch countDownLatch = new CountDownLatch(2);
+    RequestHandlerStub requestHandler = new RequestHandlerStub(countDownLatch, 0);
+    RequestReader requestReader = new RequestReaderStub();
+    final Server server = new Server(properties, requestHandler, requestReader);
     new Thread(server::start).start();
     runTestScenario1(executor, countDownLatch);
     server.shutdown();
@@ -69,11 +70,12 @@ class ServerTest {
   @Test
   void serverShouldShutdownCorrectly() throws InterruptedException, IOException {
     ExecutorService executor = Executors.newSingleThreadExecutor();
-    CountDownLatch countDownLatch = new CountDownLatch(2);
-    RequestHandlerStub requestHandler = new RequestHandlerStub(countDownLatch, 0);
     properties.remove("Winter.HttpServer.Port");
     properties.setProperty("Winter.HttpServer.Port", "8001");
-    final Server server = new Server(properties, requestHandler);
+    CountDownLatch countDownLatch = new CountDownLatch(2);
+    RequestHandlerStub requestHandler = new RequestHandlerStub(countDownLatch, 0);
+    RequestReader requestReader = new RequestReaderStub();
+    final Server server = new Server(properties, requestHandler, requestReader);
     new Thread(server::start).start();
     final Future<?> future = runTestScenario2(executor);
     server.shutdown();
@@ -92,11 +94,12 @@ class ServerTest {
 
   @Test
   void ServerShouldScheduleTimeOutCorrectly() throws IOException {
-    CountDownLatch countDownLatch = new CountDownLatch(3);
-    RequestHandlerStub requestHandler = new RequestHandlerStub(countDownLatch, 3000);
     properties.remove("Winter.HttpServer.Port");
     properties.setProperty("Winter.HttpServer.Port", "8002");
-    final Server server = new Server(properties, requestHandler);
+    CountDownLatch countDownLatch = new CountDownLatch(3);
+    RequestHandlerStub requestHandler = new RequestHandlerStub(countDownLatch, 3000);
+    RequestReader requestReader = new RequestReaderStub();
+    final Server server = new Server(properties, requestHandler, requestReader);
     Executors.newSingleThreadExecutor().submit(server::start);
     final long before = System.currentTimeMillis();
     runTestScenario3();

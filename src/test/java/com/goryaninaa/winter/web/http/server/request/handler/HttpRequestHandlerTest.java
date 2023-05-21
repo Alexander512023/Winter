@@ -11,8 +11,8 @@ class HttpRequestHandlerTest {
 
   @BeforeAll
   static void init() {
-    requestHandler = new HttpRequestHandler(new InStub(), new OutStub(), new ParserStub());
-    requestHandler.addController(new ControllerStub());
+    requestHandler = new HttpRequestHandler(new InStub(), new OutStub(),
+            new ManagerStub(), new ControllerKeeperStub());
   }
 
   @ParameterizedTest

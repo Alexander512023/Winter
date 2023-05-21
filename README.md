@@ -1,12 +1,12 @@
 # Winter Framework
-I maid this project for educational purposes. The main goal was to manage different tecnologies, such as Java concurrencie, REST API, caching, logging, JSON serialization by implementing them as POJO.
+I maid this project for educational purposes. The main goal was to manage different technologies, such as Java concurrency, REST API, caching, logging, JSON serialization by implementing them as POJO.
 ### Basics
-This project works like a framework, so it don't contain any domain logic and should be called by corresponding client code.
+This project works like a framework, so it doesn't contain any domain logic and should be called by corresponding client code.
 Functionality includes:
 1. HTTP server
 * Multithreaded server that allows processing client requests in synchronous mode
 * Supports REST API and JSON
-* Connects to client code via implementation of com.goryaninaa.winter.web.http.server.Controller 
+* Connects to client code via implementation of com.goryaninaa.winter.web.http.server.request.handler.Controller 
   interface
 2. Concurrent cache
 * Works between repository and DAO layers
@@ -14,11 +14,11 @@ Functionality includes:
 * Maintains the size within the given parameter
 3. Concurrent logger
 * Works according to standard Java logging practices which I was able to find in Internet
-* Implements producer-concumer design in order to solve concurrency problems with logwriting from different threads
+* Implements producer-consumer design in order to solve concurrency problems with log writing from different threads
 
 ### Development
-Project is Maven build and dependes on JUnit, whitch provide testing functionality. It consists only from Java code.
-Directory structure is based on Maven quickstart archetype. Packages reflect the basic functionality and are devided into three branches: server, cache, logger.
+Project is Maven build and depends on JUnit, which provide testing functionality. It consists only from Java code.
+Directory structure is based on Maven quickstart archetype. Packages reflect the basic functionality and are divided into three branches: server, cache, logger.
 All code is covered with unit-tests. In test branch you could find the examples of how framework can be used by client side.
 
 [Javadoc](https://alexander512023.github.io/WinterJavadoc/) - review for further details about 
@@ -49,4 +49,4 @@ The project code was inspected with a series of linters, among which were built-
 SonarLint, CodeStyle, PMD.
 
 ### Deployment
-Build the project simply by getting source code from github and typing mvn clean install comand. The dependencie on this framework should be among dependencies in your client code POM.
+Build the project simply by getting source code from GitHub and typing mvn clean install command. The dependency on this framework should be among dependencies in your client code POM.
