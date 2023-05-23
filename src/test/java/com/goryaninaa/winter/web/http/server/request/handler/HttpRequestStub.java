@@ -1,7 +1,7 @@
 package com.goryaninaa.winter.web.http.server.request.handler;
 
-import com.goryaninaa.winter.web.http.server.Request;
 import com.goryaninaa.winter.web.http.server.annotation.HttpMethod;
+import com.goryaninaa.winter.web.http.server.entity.HttpRequest;
 import com.goryaninaa.winter.web.http.server.exception.ServerException;
 import java.util.Optional;
 
@@ -10,7 +10,7 @@ import java.util.Optional;
  *
  * @author Alex Goryanin
  */
-public class RequestStub implements Request {
+public class HttpRequestStub extends HttpRequest {
   private final String requestString;
 
   /**
@@ -18,7 +18,13 @@ public class RequestStub implements Request {
    *
    * @param requestString - requestString
    */
-  public RequestStub(final String requestString) {
+  public HttpRequestStub(final String requestString) {
+    super("POST /cgi-bin/process.cgi?1+1=2&2+3=5 HTTP/1.1\n"
+            + "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n"
+            + "Host: www.tutorialspoint.com\n" + "Content-Type: application/x-www-form-urlencoded\n"
+            + "Content-Length: length\n" + "Accept-Language: en-us\n"
+            + "Accept-Encoding: gzip, deflate\n" + "Connection: Keep-Alive\n" + "\n"
+            + "licenseID=string&content=string&/paramsXML=string");
     this.requestString = requestString;
     if ("broke".equals(requestString)) {
       throw new ServerException(requestString);

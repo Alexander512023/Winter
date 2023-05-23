@@ -1,6 +1,6 @@
 package com.goryaninaa.winter.web.http.server.request.handler;
 
-import com.goryaninaa.winter.web.http.server.Request;
+import com.goryaninaa.winter.web.http.server.entity.Request;
 
 /**
  * Stub.
@@ -10,8 +10,8 @@ import com.goryaninaa.winter.web.http.server.Request;
 public class InStub implements RequestPreparator {
 
   @Override
-  public Request httpRequestFrom(final String requestString) {
-    return new RequestStub(requestString);
+  public Request<?> from(final String requestString) {
+    return new Request<>(new HttpRequestStub(requestString));
   }
 
 }

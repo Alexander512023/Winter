@@ -1,7 +1,7 @@
 package com.goryaninaa.winter.web.http.server.request.handler;
 
-import com.goryaninaa.winter.web.http.server.HttpResponseCode;
-import com.goryaninaa.winter.web.http.server.Response;
+import com.goryaninaa.winter.web.http.server.entity.HttpResponse;
+import java.util.Map;
 
 /**
  * Stub.
@@ -11,18 +11,23 @@ import com.goryaninaa.winter.web.http.server.Response;
 public class OutStub implements ResponsePreparator {
 
   @Override
-  public Response httpResponseFrom(final HttpResponseCode httpResponseCode) {
-    return new ResponseStub(httpResponseCode);
+  public HttpResponse from(final HttpResponseCode httpResponseCode) {
+    return new HttpResponseStub(httpResponseCode);
   }
 
   @Override
-  public Response httpResponseFrom(final HttpResponseCode httpResponseCode, final String body) {
+  public HttpResponse from(final HttpResponseCode httpResponseCode, final String body) {
     return null;
   }
 
   @Override
-  public <T> Response httpResponseFrom(final HttpResponseCode httpResponseCode,
-      final T responseObject) {
+  public <T> HttpResponse from(final HttpResponseCode httpResponseCode,
+                               final T responseObject) {
+    return new HttpResponseStub(httpResponseCode);
+  }
+
+  @Override
+  public HttpResponse from(Map<String, String> cookie) {
     return null;
   }
 

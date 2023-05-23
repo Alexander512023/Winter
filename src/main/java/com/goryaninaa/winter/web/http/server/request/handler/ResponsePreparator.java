@@ -1,21 +1,22 @@
 package com.goryaninaa.winter.web.http.server.request.handler;
 
-import com.goryaninaa.winter.web.http.server.HttpResponseCode;
-import com.goryaninaa.winter.web.http.server.Response;
+import com.goryaninaa.winter.web.http.server.entity.HttpResponse;
+import java.util.Map;
 
 /**
  * This interface is used to inject dependency on class that will prepare
- * {@link Response}.
+ * {@link HttpResponse}.
  *
  * @author Alex Goryanin
  */
-@SuppressWarnings("unused")
 public interface ResponsePreparator {
 
-  Response httpResponseFrom(HttpResponseCode httpResponseCode);
+  HttpResponse from(HttpResponseCode httpResponseCode);
 
-  Response httpResponseFrom(HttpResponseCode httpResponseCode, String body);
+  HttpResponse from(HttpResponseCode httpResponseCode, String body);
 
-  <T> Response httpResponseFrom(HttpResponseCode httpResponseCode, T responseObject);
+  <T> HttpResponse from(HttpResponseCode httpResponseCode, T responseObject);
+
+  HttpResponse from(Map<String, String> cookie);
 
 }

@@ -1,9 +1,8 @@
 package com.goryaninaa.winter.web.http.server.entity;
 
-import com.goryaninaa.winter.web.http.server.Request;
 import com.goryaninaa.winter.web.http.server.annotation.HttpMethod;
 import com.goryaninaa.winter.web.http.server.json.JsonDeserializer;
-import com.goryaninaa.winter.web.http.server.request.handler.Deserializer;
+import com.goryaninaa.winter.web.http.server.request.handler.manager.Deserializer;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,13 +15,14 @@ import java.util.regex.Pattern;
  *
  * @author Alex Goryanin
  */
-public class HttpRequest implements Request {
+public class HttpRequest {
   private final String request;
   private final Deserializer deserializer = new JsonDeserializer();
   private HttpMethod method;
   private String mapping;
   private final Map<String, String> parameters = new ConcurrentHashMap<>();
   private final Map<String, String> headers = new ConcurrentHashMap<>();
+  private final Map<String, String> cookies = new ConcurrentHashMap<>();
   private String body;
 
   /**
@@ -37,14 +37,15 @@ public class HttpRequest implements Request {
     defineParameters();
     defineHeaders();
     defineBody();
+    if (headers.containsKey("Cookie")) {
+      defineCookies();
+    }
   }
 
-  @Override
   public String getMapping() {
     return mapping;
   }
 
-  @Override
   public HttpMethod getMethod() {
     return method;
   }
@@ -54,7 +55,6 @@ public class HttpRequest implements Request {
    * controller mapping. If controller mapping length is more than request mapping
    * length - return empty Optional.
    */
-  @Override
   public Optional<String> getControllerMapping(final int length) {
     Optional<String> controllerMapping = Optional.empty();
     if (mapping.length() >= length) {
@@ -71,7 +71,6 @@ public class HttpRequest implements Request {
     return Optional.ofNullable(headers.get(name));
   }
 
-  @Override
   public Optional<String> getBody() {
     return Optional.ofNullable(body);
   }
@@ -94,6 +93,20 @@ public class HttpRequest implements Request {
           .ofNullable(deserializer.deserialize(object.getClass(), body));
     }
     return jsonObject;
+  }
+
+  public Optional<String> getCookieValue(final String key) {
+    return Optional.ofNullable(cookies.get(key));
+  }
+
+  private void defineCookies() {
+    final String[] cookiesPairs = headers.get("Cookie").split(";");
+    for (final String cookiesPair : cookiesPairs) {
+      final String[] cookiesPairArr = cookiesPair.trim().split("=");
+      final String key = cookiesPairArr[0];
+      final String value = cookiesPairArr[1];
+      cookies.put(key, value);
+    }
   }
 
   private void defineMethod() {

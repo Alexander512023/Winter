@@ -1,10 +1,13 @@
 package com.goryaninaa.winter.web.http.server.request.handler;
 
+import com.goryaninaa.winter.web.http.server.request.handler.manager.Deserializer;
+
 /**
  * Stub.
  *
  * @author Alex Goryanin
  */
+//TODO delete...
 public class ParserStub implements Deserializer {
 
   @Override

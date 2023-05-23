@@ -2,6 +2,7 @@ package com.goryaninaa.winter.web.http.server;
 
 import com.goryaninaa.winter.Waitility;
 import com.goryaninaa.winter.web.http.server.entity.HttpResponse;
+import com.goryaninaa.winter.web.http.server.request.handler.HttpResponseCode;
 import java.util.concurrent.CountDownLatch;
 
 /**

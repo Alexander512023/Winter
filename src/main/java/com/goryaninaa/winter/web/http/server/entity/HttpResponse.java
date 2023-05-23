@@ -1,7 +1,6 @@
 package com.goryaninaa.winter.web.http.server.entity;
 
-import com.goryaninaa.winter.web.http.server.HttpResponseCode;
-import com.goryaninaa.winter.web.http.server.Response;
+import com.goryaninaa.winter.web.http.server.request.handler.HttpResponseCode;
 import com.goryaninaa.winter.web.http.server.json.JsonSerializer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -18,10 +17,21 @@ import java.util.Map.Entry;
  * @see HttpResponse#HttpResponse(HttpResponseCode, Object)
  * @author Alex Goryanin
  */
-public class HttpResponse implements Response {
+public class HttpResponse {
   private final HttpResponseCode httpResponseCode;
   private Map<String, String> headers;
   private final String response;
+
+  /**
+   * Use this constructor if you send success authentication response.
+   *
+   * @param cookie - cookie
+   */
+  public HttpResponse(final Map<String, String> cookie) {
+    this.httpResponseCode = HttpResponseCode.OK;
+    defineHeaders(cookie);
+    response = combine();
+  }
 
   /**
    * Use this constructor if you got nothing to answer to client except HTTP
@@ -32,7 +42,7 @@ public class HttpResponse implements Response {
   public HttpResponse(final HttpResponseCode httpResponseCode) {
     this.httpResponseCode = httpResponseCode;
     defineHeaders();
-    response = this.httpResponseCode.getStartLine();
+    response = combine();
   }
 
   /**
@@ -64,14 +74,20 @@ public class HttpResponse implements Response {
     this.response = combine(httpResponseCode, body);
   }
 
-  @Override
   public String getResponseString() {
     return response;
   }
 
-  @Override
   public HttpResponseCode getCode() {
     return httpResponseCode;
+  }
+
+  private String combine() {
+    final StringBuilder responseString = new StringBuilder(httpResponseCode.getStartLine());
+    for (final Entry<String, String> header : headers.entrySet()) {
+      responseString.append(header.getKey()).append(": ").append(header.getValue()).append('\n');
+    }
+    return responseString.toString();
   }
 
   private String combine(final HttpResponseCode httpResponseCode, final String body) {
@@ -81,6 +97,13 @@ public class HttpResponse implements Response {
     }
     responseString.append('\n').append(body);
     return responseString.toString();
+  }
+
+  private void defineHeaders(Map<String, String> cookie) {
+    defineHeaders();
+    headers.put("Content-Type", "text/html");
+    Entry<String, String> cookiePair = cookie.entrySet().stream().findFirst().orElseThrow();
+    headers.put("Set-Cookie", cookiePair.getKey() + "=" + cookiePair.getValue());
   }
 
   private void defineHeaders(final String value, final String body) {

@@ -3,6 +3,7 @@ package com.goryaninaa.winter.web.http.server;
 import com.goryaninaa.winter.logger.mech.Logger;
 import com.goryaninaa.winter.logger.mech.LoggingMech;
 import com.goryaninaa.winter.logger.mech.StackTraceString;
+import com.goryaninaa.winter.web.http.server.entity.HttpResponse;
 import com.goryaninaa.winter.web.http.server.exception.ServerException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -117,17 +118,17 @@ public class Server {
     final Optional<String> request = requestReader.getRequest(input);
     if (request.isPresent()) {
       final String requestString = request.get();
-      final Response response = requestHandler.handle(requestString);
-      sendResponse(response, output);
+      final HttpResponse httpResponse = requestHandler.handle(requestString);
+      sendResponse(httpResponse, output);
       if (LOG.isInfoEnabled()) {
-        LOG.info("Response with code " + response.getCode().getCode() + " was sent");
+        LOG.info("Response with code " + httpResponse.getCode().getCode() + " was sent");
       }
     }
     socket.close();
   }
 
-  private void sendResponse(final Response response, final PrintWriter output) {
-    output.println(response.getResponseString());
+  private void sendResponse(final HttpResponse httpResponse, final PrintWriter output) {
+    output.println(httpResponse.getResponseString());
     output.flush();
   }
 

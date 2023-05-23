@@ -1,4 +1,4 @@
-package com.goryaninaa.winter.web.http.server;
+package com.goryaninaa.winter.web.http.server.request.handler;
 
 /**
  * Enumeration of supported HTTP response codes.
@@ -7,8 +7,11 @@ package com.goryaninaa.winter.web.http.server;
  */
 public enum HttpResponseCode {
 
-  OK(200, "HTTP/1.1 200 OK\n"), NOTFOUND(404, "HTTP/1.1 404 Not Found\n"),
-  INTERNALSERVERERROR(500, "HTTP/1.1 500 Internal Server Error");
+  OK(200, "HTTP/1.1 200 OK\n"),
+  NOTFOUND(404, "HTTP/1.1 404 Not Found\n"),
+  UNAUTHORIZED(401, "HTTP/1.1 401 Unauthorized\n"),
+  INTERNALSERVERERROR(500, "HTTP/1.1 500 Internal Server Error"),
+  BADREQUEST(400, "HTTP/1.1 400 Bad Request\n" );
 
   private final int code;
   private final String startLine;

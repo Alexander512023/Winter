@@ -3,12 +3,15 @@ package com.goryaninaa.winter.web.http.server.request.handler;
 import com.goryaninaa.winter.logger.mech.Logger;
 import com.goryaninaa.winter.logger.mech.LoggingMech;
 import com.goryaninaa.winter.logger.mech.StackTraceString;
-import com.goryaninaa.winter.web.http.server.HttpResponseCode;
-import com.goryaninaa.winter.web.http.server.Request;
 import com.goryaninaa.winter.web.http.server.RequestHandler;
-import com.goryaninaa.winter.web.http.server.Response;
+import com.goryaninaa.winter.web.http.server.dto.ErrorDto;
+import com.goryaninaa.winter.web.http.server.entity.Authentication;
+import com.goryaninaa.winter.web.http.server.entity.HttpResponse;
+import com.goryaninaa.winter.web.http.server.entity.Request;
 import com.goryaninaa.winter.web.http.server.exception.ClientException;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is implementation of HTTP request handler. Main goal of this class is to
@@ -22,56 +25,72 @@ import java.util.Optional;
  * @author Alex Goryanin
  */
 public class HttpRequestHandler implements RequestHandler {
-  private final RequestPreparator input;
-  private final ResponsePreparator out;
+  private final RequestPreparator complexRequest;
+  private final ResponsePreparator response;
   private final Manager manager;
-  private final ControllerKeeper ctrlKpr;
+  private final AtomicBoolean securityEnabled;
+  private Security security;
   private static final Logger LOG =
       LoggingMech.getLogger(HttpRequestHandler.class.getCanonicalName());
 
   /**
    * Constructor that receives all mandatory dependencies.
    *
-   * @param input  - see {@link RequestPreparator}
-   * @param out    - see {@link ResponsePreparator}
-   * @param manager - see {@link Manager}
+   * @param complexRequest  - see {@link RequestPreparator}
+   * @param response    - see {@link ResponsePreparator}
+   * @param configurator - see {@link HandlerCofigurator}
    */
-  public HttpRequestHandler(final RequestPreparator input, final ResponsePreparator out,
-                            final Manager manager, final ControllerKeeper ctrlKpr) {
-    this.input = input;
-    this.out = out;
-    this.manager = manager;
-    this.ctrlKpr = ctrlKpr;
+  public HttpRequestHandler(final RequestPreparator complexRequest,
+                            final ResponsePreparator response,
+                            final HandlerCofigurator configurator) {
+    this.complexRequest = complexRequest;
+    this.response = response;
+    this.manager = configurator.getManager();
+    this.securityEnabled = configurator.isSecurityEnabled();
+    if (securityEnabled.get()) {
+      this.security = configurator.getSecurity();
+    }
   }
 
   /**
    * This method receives HTTP request of String type and provide its handling.
    */
   @Override
-  public Response handle(final String requestString) {
-    Response result = out.httpResponseFrom(HttpResponseCode.NOTFOUND);
-    Optional<Response> httpResponse = Optional.empty();
+  public HttpResponse handle(final String requestString) {
     try {
-      final Request httpRequest = input.httpRequestFrom(requestString);
-      final Optional<Controller> controller = ctrlKpr.defineController(httpRequest);
-      if (controller.isPresent()) {
-        httpResponse = manager.performScenario(controller.get(), httpRequest);
-      }
-      if (httpResponse.isPresent()) {
-        result = httpResponse.get();
-      }
-      return result; // NOPMD
+      final Request request = complexRequest.from(requestString);
+      return securityEnabled.get() ? secureHandle(request) : handle(request);
     } catch (ClientException e) {
       if (LOG.isErrorEnabled()) {
         LOG.error(StackTraceString.get(e));
       }
-      return out.httpResponseFrom(HttpResponseCode.NOTFOUND); // NOPMD
+      return response.from(e.getResponseCode(), // NOPMD
+              new ErrorDto(e.getResponseCode().getCode(), e.getMessage()));
     } catch (RuntimeException e) { // NOPMD
       if (LOG.isErrorEnabled()) {
         LOG.error(StackTraceString.get(e));
       }
-      return out.httpResponseFrom(HttpResponseCode.INTERNALSERVERERROR); // NOPMD
+      return response.from(HttpResponseCode.INTERNALSERVERERROR); // NOPMD
     }
   }
 
+  private HttpResponse handle(final Request request) {
+    return manager.<HttpResponse>performStandardScenario(request)
+            .orElseGet(() -> response.from(HttpResponseCode.NOTFOUND));
+  }
+
+  private HttpResponse secureHandle(final Request request) {
+    final Optional<Authentication> auth = security.getAuthentication(request);
+    return auth.isEmpty()
+            ? handleAuthentication(request)
+            : handle(new Request(request.getHttpRequest(), auth.get()));
+  }
+
+  private HttpResponse handleAuthentication(final Request request) {
+    Optional<Authentication> auth =
+            manager.performAuthenticationScenario(request);
+    final Map<String, String> cookie = security.openSession(auth.orElseThrow(() ->
+            new ClientException("Authentication failed, try again.", HttpResponseCode.BADREQUEST)));
+    return response.from(cookie);
+  }
 }

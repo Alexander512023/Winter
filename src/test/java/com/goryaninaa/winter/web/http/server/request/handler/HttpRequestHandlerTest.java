@@ -12,13 +12,13 @@ class HttpRequestHandlerTest {
   @BeforeAll
   static void init() {
     requestHandler = new HttpRequestHandler(new InStub(), new OutStub(),
-            new ManagerStub(), new ControllerKeeperStub());
+            new HandlerConfiguratorStub());
   }
 
   @ParameterizedTest
   @CsvSource({
           "/test, 200, handler should handle correct request",
-          "/test1, 404, handler should handle incorrect request",
+          "/test1, 400, handler should handle incorrect request",
           "broke, 500, handler should handle broke request"
   })
   void handle(String request, int code, String message) {

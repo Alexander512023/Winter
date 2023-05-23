@@ -4,7 +4,8 @@ import com.goryaninaa.winter.logger.mech.Logger;
 import com.goryaninaa.winter.logger.mech.LoggingMech;
 import com.goryaninaa.winter.web.http.server.exception.ClientException;
 import com.goryaninaa.winter.web.http.server.exception.ServerException;
-import com.goryaninaa.winter.web.http.server.request.handler.Deserializer;
+import com.goryaninaa.winter.web.http.server.request.handler.HttpResponseCode;
+import com.goryaninaa.winter.web.http.server.request.handler.manager.Deserializer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -268,7 +269,7 @@ public class JsonDeserializer implements Deserializer { // NOPMD
         .compile("(?s)\\{(.*?\".+?\".*?:\\s*.+?){" + counter + "}.*?}");
     final Matcher matcher = pattern.matcher(jsonString);
     if (!matcher.find() || counter == 0) {
-      throw new ClientException("Deserializing JSON incorrect format");
+      throw new ClientException("Deserializing JSON incorrect format", HttpResponseCode.BADREQUEST);
     }
   }
 

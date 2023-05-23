@@ -10,8 +10,8 @@ import com.goryaninaa.winter.web.http.server.request.handler.RequestPreparator;
 public class IncomingRequest implements RequestPreparator {
 
   @Override
-  public HttpRequest httpRequestFrom(final String requestString) {
-    return new HttpRequest(requestString);
+  public Request<?> from(final String requestString) {
+    return new Request<>(new HttpRequest(requestString));
   }
 
 }

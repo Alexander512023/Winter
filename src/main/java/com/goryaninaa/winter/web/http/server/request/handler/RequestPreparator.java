@@ -1,6 +1,6 @@
 package com.goryaninaa.winter.web.http.server.request.handler;
 
-import com.goryaninaa.winter.web.http.server.Request;
+import com.goryaninaa.winter.web.http.server.entity.Request;
 
 /**
  * This interface is responsible for converting incoming String request to
@@ -10,6 +10,6 @@ import com.goryaninaa.winter.web.http.server.Request;
  */
 public interface RequestPreparator {
 
-  Request httpRequestFrom(String requestString);
+  Request from(String requestString);
 
 }
